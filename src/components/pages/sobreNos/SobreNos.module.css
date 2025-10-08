@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
+
+.sobreNos {
+    min-height: 180vh;
+    width: 100vw;
+    font-family: 'Fredoka', serif;
+}
+
+.textosComplementares {
+    width: 100vw;
+    height: 140vh;
+
+}
+
+.projeto {
+    height: 40vh;
+    background-color: black;
+    display: flex;
+    text-align: center;
+    margin: 0;
+}
+
+.projeto p {
+    font-weight: 600;
+    width: 70vw;
+    font-size: 1.3em;
+    color: white;
+}
+
+
+.objetivo {
+    height: 60vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.contemUmeDois {
+    width: 80vw;
+    height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2em;
+}
+
+.divUmobjetivo {
+    background-color: #fadc83;
+    width: 40vw;
+    height: 80vh;
+}
+
+.planejar {
+    width: 40vw;
+}
+
+.divUmobjetivo p {
+    margin-top: 1em;
+    width: 37vw;
+    font-weight: 500;
+}
+
+.divDoisobjetivo {
+    width: 40vw;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+}
+
+.divAniversario {
+    width: 100%;
+    display: flex;
+    background-color: #f8a60d;
+}
+
+.divAniversario p{
+    width: 20vw;
+    font-weight: 500;
+}
+
+.aniversario {
+    width: 13vw;
+}
+
+.divJogo {
+    width: 100%;
+    display: flex;
+    background-color: #f66e06c6;
+}
+
+.divJogo p {
+    width: 20vw;
+    font-weight: 500;
+}
+
+.futebol {
+    width: 13vw;
+}
+
+.time {
+    width: 100vw;
+    height: 80vh;
+}
+
+.articleTextos {
+    height: 30vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.articleTextos h1 {
+    font-size: 1.6em;
+}
+
+.textoIntroducaoEquipe {
+    width: 50vw;
+}
+
+.membros {
+    display: flex;
+    align-items: flex-end;
+    width: 80vw;
+}
+
+.sobreEliza {
+    height: 50vh;
+    width: 20vw;
+    background-color: #f87f5a;
+    border-top-left-radius: 20em;
+    border-top-right-radius: 20em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.sobreEliza p {
+    margin: 0;
+}
+
+.elizaFoto {
+    width: 12vw;
+    border-radius: 50%;
+}
+
+.nomeEcargoEliza {
+    height: 2em;
+    margin-bottom: 0;
+}
+
+.sobreGiulia {
+    height: 45vh;
+    width: 20vw;
+    background-color: #fcbb41;
+    margin-top: 5vh;
+    border-top-left-radius: 20em;
+    border-top-right-radius: 20em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.sobreGiulia p {
+    margin: 0;
+}
+
+.giuliaFoto {
+    width: 12vw;
+    border-radius: 50%;
+}
+
+.nomeEcargoGiulia {
+    margin-bottom: 0;
+    height: 2em;
+}
+
+.sobreMonica {
+    height: 50vh;
+    width: 20vw;
+    background-color: #fb842a;
+    border-top-left-radius: 20em;
+    border-top-right-radius: 20em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.sobreMonica p {
+    margin: 0;
+}
+
+.monicaFoto {
+    width: 12vw;
+    border-radius: 50%;
+}
+
+.nomeEcargoMonica {
+    margin-bottom: 0;
+    height: 2em;
+}
+
+.sobreTony {
+    height: 45vh;
+    width: 20vw;
+    background-color: #f8d15d;
+    margin-top: 5vh;
+    border-top-left-radius: 20em;
+    border-top-right-radius: 20em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.sobreTony p {
+    margin: 0;
+}
+
+.tonyFoto {
+    width: 12vw;
+    border-radius: 50%;
+}
+
+.nomeEcargoTony {
+    height: 2em;
+    margin-bottom: 0;
+}

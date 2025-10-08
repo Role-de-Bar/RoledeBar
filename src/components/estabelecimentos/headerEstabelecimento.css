@@ -1,0 +1,153 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+
+.headerEsta {
+  background-color: #0D0D0D;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 100vw;
+  height: 13vh;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: row;
+}
+
+.headerEsta .logo {
+  font-family: "Fredoka", sans-serif;
+  margin-left: 0.5rem;
+  color: #fff;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.icon-btn {
+  background:#F0A13E;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+  color: white;
+}
+
+.icon-btn:hover {
+  background:#F06207;
+}
+
+.search-bar {
+  display: flex;
+  flex: 1;
+  max-width: 500px;
+  margin: 0 1rem;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px 0 0 6px;
+}
+
+.search-bar button {
+  border-radius: 0 6px 6px 0;
+}
+
+.desktop-icons {
+  display: flex;
+}
+
+.mobile-menu-btn {
+  display: none;
+}
+
+.mobile-menu-dropdown {
+  position: absolute;
+  top: 13vh;
+  right: 2vw;
+  background: #0D0D0D;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  padding: 1em 0.5em;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.mobile-menu-dropdown .icon-btn {
+  justify-content: flex-start;
+  gap: 0.7em;
+  width: 100%;
+  font-size: 1em;
+}
+
+@media (max-width:950px) {
+  .headerEsta {
+    padding: 1rem 0;
+  }
+
+  .right {
+    margin: 2vw;
+  }
+
+  .left {
+    margin: 2vw;
+  }
+}
+
+@media (max-width:762px) {
+  .headerEsta {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 13vh;
+    z-index: 100;
+    margin-top: 0;
+    padding: 0 1vw;
+    font-size: 0.9em;
+  }
+}
+
+
+@media (max-width:657px) {
+  .desktop-icons {
+    display: none;
+  }
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+  }
+}
+
+@media (max-width:530px) {
+  .logo{
+    display: none;
+  }
+}
+
+
+@media (max-width:400px) {
+  .search-bar input{
+    width: 10vw;
+  }
+}

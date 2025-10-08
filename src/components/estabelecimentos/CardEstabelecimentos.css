@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
+
+.lista-estabelecimentos {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  font-family: 'Fredoka', sans-serif;
+  align-items: center;
+
+}
+
+.card-horizontal {
+  width: 95%;
+  min-height: 7vh;
+  display: flex;
+  align-items: stretch;
+  background-color: #fff8e1;
+  border-radius: 0.8em;
+  box-shadow: 0 0.4em 1.2em rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.card-horizontal:hover {
+  transform: scale(1.01);
+}
+
+.imagem-card {
+  width: 15vw;
+  height: 100%;
+  max-width: 8em;
+  max-height: 8em;
+  object-fit: cover;
+  flex-shrink: 0;
+  margin: 0.5em;
+  border-radius: 4px;
+}
+
+.info-card {
+  padding: 1em;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.info-card h2 {
+  color: #f66e06;
+  font-size: 1.2em;
+  margin: 0;
+}
+
+.info-card p {
+  margin: 0.3em 0;
+  font-size: 0.9em;
+  color: #444;
+}
+
+.tag-musica,
+.tag-comodidades {
+  font-size: 0.8em;
+  color: #666;
+}
+
+.botao-card {
+  align-self: flex-start;
+  margin: 0.5em;
+  padding: 0.4em 1em;
+  background-color: #f66e06;
+  color: white;
+  border: none;
+  border-radius: 0.5em;
+  font-size: 0.85em;
+  cursor: pointer;
+  font-family: 'Fredoka', sans-serif;
+  transition: background-color 0.3s ease;
+}
+
+.botao-vermais:hover {
+  background-color: #f8a60d;
+}
+
+@media (max-width:1350px){
+  .lista-estabelecimentos {
+    width: 50vw;
+  }
+}
+
+@media (max-width:762px){
+
+  .lista-estabelecimentos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+  }
+
+  .main_estabelecimentos{
+    display: flex;
+    justify-content: center;
+    align-items:stretch;
+
+  }
+}
