@@ -2,8 +2,11 @@ import { useState } from 'react';
 import './CadastroProprietario.css';
 import { User, Mail, Lock, Key } from "lucide-react";
 import FundolLogin from "../../../assets/img/loginfundo.png"
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 function CadastroProprietario({ setIsLogged }) {
+  const navigate = useNavigate();
   localStorage.setItem("isLogged", "false");
   setIsLogged(false);
 
@@ -37,6 +40,22 @@ function CadastroProprietario({ setIsLogged }) {
     }
   };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await axios.post('http://localhost:3000/auth/register', {
+                nome,
+                email,
+                senha,
+                tipo: "PROPRIETARIO"
+            });
+            
+            alert("Cadastro realizado com sucesso!");
+            navigate('/estabelecimentos/');
+        } catch (error) {
+            alert(error.response?.data?.message || "Erro ao cadastrar");
+        }
+    };
   return (
     <div className="estabelecimento-container">
       <div className="estabelecimento-img-side">

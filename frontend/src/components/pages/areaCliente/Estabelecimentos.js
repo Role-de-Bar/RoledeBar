@@ -62,7 +62,10 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
     <main className="main_estabelecimentos">
       <HeaderEstabelecimento onToggleFiltros={toggleFiltros} />
 
-      <div className='alingn-conteudo'>
+      <div
+        className='alingn-conteudo'
+    
+      >
         <AnimatePresence>
           {filtrosAbertos && (
             <motion.aside

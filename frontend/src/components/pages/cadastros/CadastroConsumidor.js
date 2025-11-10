@@ -2,9 +2,12 @@ import { useState } from 'react';
 import './CadastroProprietario.css'; // Use o mesmo CSS para manter o padrão visual
 import { User, Mail, Lock } from "lucide-react";
 import FundolLogin from "../../../assets/img/loginfundo.png";
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
 function CadastroConsumidor({ setIsLogged }) {
+  const navigate = useNavigate();
   localStorage.setItem("isLogged", "false");
   setIsLogged(false);
 
@@ -34,6 +37,25 @@ function CadastroConsumidor({ setIsLogged }) {
       alert("A confirmação de senha está diferente da senha.");
     }
   };
+
+
+  const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await axios.post('http://localhost:3000/auth/register', {
+                nome,
+                email,
+                senha,
+                tipo: "CONSUMIDOR"
+            });
+            
+            alert("Cadastro realizado com sucesso!");
+            navigate('/estabelecimentos/');
+        } catch (error) {
+            alert(error.response?.data?.message || "Erro ao cadastrar");
+        }
+    };
+
 
   return (
     <div className="estabelecimento-container">

@@ -7,6 +7,7 @@ import LabelTexto from "../../form/LabelTexto";
 import FundolLogin from "../../../assets/img/loginfundo.png"
 import FundolLoginMobile from "../../../assets/img/MobileFundo.png"
 import { User, Store, Mail, LockKeyhole, LogOut } from "lucide-react";
+import axios from "axios";
 
 
 function Login({ setIsLogged, setUsuarioLogado }) {
@@ -60,28 +61,37 @@ function Login({ setIsLogged, setUsuarioLogado }) {
         return null;
 
     }
+    
+    const login = async (e) => {
+            e.preventDefault();
+            try {
+                const response = await axios.post('http://localhost:3000/auth/login', {
+                    email,
+                    senha
+                });
 
-    const login = (e) => {
-        e.preventDefault();
-        const resultado = verificaDadosLogin(email, senha);
+                const { token, user } = response.data;
 
-        if (resultado) {
-            const usuarioComTipo = { ...resultado.usuario, tipo: resultado.tipo };
+                // Guarda token e dados do usuário
+                localStorage.setItem("token", token);
+                localStorage.setItem("isLogged", "true");
+                localStorage.setItem("usuarioLogado", JSON.stringify(user));
 
-            localStorage.setItem("isLogged", "true");
-            localStorage.setItem("usuarioLogado", JSON.stringify(usuarioComTipo));
+                setIsLogged(true);
+                setUsuarioLogado(user);
 
-            setIsLogged(true);
-            setUsuarioLogado(usuarioComTipo);
+                // Redireciona baseado no tipo do usuário
+                if (user.tipo === "PROPRIETARIO") {
+                    navigate("/estabelecimentos", { state: { usuario: user } });
+                } else {
+                    navigate("/servicos", { state: { usuario: user } });
+                }
 
-            navigate("/estabelecimentos", {
-                state: { usuario: usuarioComTipo }
-            });
-        }
-        else {
-            alert('Email ou senha inválidos');
-        }
-    };
+            } catch (error) {
+                alert(error.response?.data?.message || 'Email ou senha inválidos');
+            }
+        };
+
 
 
     return (

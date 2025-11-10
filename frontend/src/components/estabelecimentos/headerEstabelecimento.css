@@ -49,6 +49,10 @@
   color: white;
 }
 
+.user-name{
+  padding: 0.2vw;
+}
+
 .icon-btn:hover {
   background:#F06207;
 }

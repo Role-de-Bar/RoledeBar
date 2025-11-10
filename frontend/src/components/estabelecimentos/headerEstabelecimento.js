@@ -1,16 +1,43 @@
-import { Menu, User, Heart, LogOut, Search,  Grip } from "lucide-react";
-import { useState } from "react";
+import { Menu, User, Heart, LogOut, Search, Grip } from "lucide-react";
+import { useState, useEffect } from "react";
 import "./headerEstabelecimento.css";
 
 function HeaderEstabelecimento({ onToggleFiltros }) {
   const [menuMobileOpen, setMenuMobileOpen] = useState(false);
-  const returnHome = () => {
-    window.location.href = "/";
-  }
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [usuarioLogado, setUsuarioLogado] = useState(null);
 
-  const submitLogin = () =>{
-    window.location.href = "/login"
-  }
+  useEffect(() => {
+    // Recupera dados do usuário do localStorage
+    const userData = localStorage.getItem('usuarioLogado');
+    if (userData) {
+      setUsuarioLogado(JSON.parse(userData));
+    }
+  }, []);
+
+  const goToFavoritos = () => window.location.href = "/favoritos";
+  
+  const submitLogin = () => {
+    goToLoginOrPerfil();
+  };
+
+  const returnHome = () => {
+    // Limpa dados do login
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuarioLogado');
+    setUsuarioLogado(null);
+    setIsModalOpen(false);
+    window.location.href = "/";
+  };
+
+  const goToLoginOrPerfil = () => {
+    if (usuarioLogado) {
+      window.location.href = "/perfil";
+    } else {
+      window.location.href = "/login";
+    }
+  };
+
   return (
     <div className="headerEstabelecimento">
       <header className="headerEsta">
@@ -30,20 +57,34 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
 
         {/* Desktop icons */}
         <div className="right desktop-icons">
-          <button className="icon-btn" onClick={() => submitLogin()}>
+          <button className="icon-btn" onClick={submitLogin}>
             <User size={24} />
+            {usuarioLogado && <span className="user-name">{usuarioLogado.nome}</span>}
           </button>
-          <button className="icon-btn">
-            <Heart size={24} />
-          </button>
-          <button className="icon-btn" onClick={() => returnHome()}>
-            <LogOut size={24} />
-          </button>
+    
+          {usuarioLogado && (
+            <button className="icon-btn" onClick={goToFavoritos}>
+              <Heart size={24} />
+            </button>
+          )}
+          
+          {usuarioLogado ? (
+            <button className="icon-btn" onClick={returnHome}>
+              <LogOut size={24} />
+            </button>
+          ) : (
+            <button className="icon-btn" onClick={() => window.location.href = "/"}>
+              <LogOut size={24} />
+            </button>
+          )}
         </div>
 
-        {/* Mobile menu button */}
+        {/* Mobile menu */}
         <div className="right mobile-menu-btn">
-          <button className="icon-btn" onClick={() => setMenuMobileOpen(!menuMobileOpen)}>
+          <button
+            className="icon-btn"
+            onClick={() => setMenuMobileOpen(!menuMobileOpen)}
+          >
             <Menu size={24} />
           </button>
         </div>
@@ -52,14 +93,21 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
       {/* Mobile menu */}
       {menuMobileOpen && (
         <div className="mobile-menu-dropdown">
-          <button className="icon-btn" onClick={() => submitLogin()}>
-            <User size={24} /> <span>Login</span>
+          <button className="icon-btn" onClick={submitLogin}>
+            <User size={24} />
+            <span>{usuarioLogado ? usuarioLogado.nome : 'Login'}</span>
           </button>
-          <button className="icon-btn">
-            <Heart size={24} /> <span>Favoritos</span>
-          </button>
-          <button className="icon-btn" onClick={() => returnHome()}>
-            <LogOut size={24} /> <span>Sair</span>
+          
+          {usuarioLogado && (
+            <button className="icon-btn" onClick={goToFavoritos}>
+              <Heart size={24} />
+              <span>Favoritos</span>
+            </button>
+          )}
+          
+          <button className="icon-btn" onClick={returnHome}>
+            <LogOut size={24} />
+            <span>{usuarioLogado ? 'Sair' : 'Voltar'}</span>
           </button>
         </div>
       )}
