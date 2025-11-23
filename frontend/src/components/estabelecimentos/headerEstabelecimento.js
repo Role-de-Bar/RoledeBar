@@ -1,4 +1,4 @@
-import { Menu, User, Heart, LogOut, Search, Grip } from "lucide-react";
+import { Menu, User, Heart, LogOut, Search, Grip,LayoutGrid  } from "lucide-react";
 import { useState, useEffect } from "react";
 import "./headerEstabelecimento.css";
 
@@ -28,6 +28,10 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
     setUsuarioLogado(null);
     setIsModalOpen(false);
     window.location.href = "/";
+  };
+
+  const goEstabelecimentos = () => {
+    window.location.href = "/cadastroEstabelecimento";
   };
 
   const goToLoginOrPerfil = () => {
@@ -77,6 +81,11 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
               <LogOut size={24} />
             </button>
           )}
+            {usuarioLogado &&(
+                <button className="icon-btn" onClick={() =>goEstabelecimentos()}>
+                      <LayoutGrid size={24} />
+                </button>
+            )}
         </div>
 
         {/* Mobile menu */}
@@ -109,6 +118,12 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
             <LogOut size={24} />
             <span>{usuarioLogado ? 'Sair' : 'Voltar'}</span>
           </button>
+            {usuarioLogado &&(
+                <button className="icon-btn" onClick={() =>goEstabelecimentos()}>
+                      <LayoutGrid size={24} />
+                      <span>Estabelecimentos</span>
+                </button>
+            )}
         </div>
       )}
     </div>

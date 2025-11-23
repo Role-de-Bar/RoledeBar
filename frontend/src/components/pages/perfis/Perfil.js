@@ -37,7 +37,6 @@ function Perfil({ setIsLogged, usuarioLogado }) {
     }
   };
 
-  // Add this function before the return statement
 const excluirConta = () => {
   if (window.confirm("Tem certeza que deseja excluir sua conta?")) {
     const chave = usuario.tipo === "PROPRIETARIO" ? "proprietarios" : "consumidores";
