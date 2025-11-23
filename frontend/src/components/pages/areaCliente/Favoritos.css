@@ -1,3 +1,4 @@
+/* Container principal da página de favoritos */
 .main-favoritos {
     width: 85vw;
     min-height: 92vh;
@@ -5,12 +6,15 @@
     flex-direction: column;
     box-shadow: 0 8px 2em rgba(0, 0, 0, 0.3);
     padding: 1em;
-    font-family: 'Fredoka', serif;
+    font-family: 'Fredoka', sans-serif;
 }
 
+/* Cabeçalho da página */
 .cabecalho-favoritos {
     width: 100%;
     height: 15vh;
+    display: flex;
+    align-items: center;
     gap: 1em;
 }
 
@@ -24,14 +28,95 @@
     font-family: 'Fredoka', sans-serif;
     font-size: large;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
 
+.cabecalho-favoritos button:hover {
+    background-color: #f9a260;
+    transform: scale(1.05);
+}
+
+/* Container da listagem de favoritos */
 .listagem-favoritos {
     width: 100%;
     min-height: 72vh;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
+/* Título da página */
 .listagem-favoritos h1 {
-    margin: 0.5em;
+    margin: 0.5em 0;
     color: #f66e06;
+}
+
+/* Card individual do favorito */
+.card-favorito {
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Ações dentro do card */
+.acoes {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+/* Botões dentro do card */
+.acoes button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #ff6b6b;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.acoes button:hover {
+    background-color: #e63946;
+    transform: scale(1.05);
+}
+
+/* Link de ver detalhes */
+.acoes a {
+    padding: 8px 16px;
+    border-radius: 6px;
+    background-color: #0b2893;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.acoes a:hover {
+    background-color: #032147;
+    transform: scale(1.05);
+}
+
+/* Mensagem quando não há favoritos */
+.vazio {
+    text-align: center;
+    color: #777;
+    margin-top: 50px;
+}
+
+.vazio a {
+    color: #f66e06;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.vazio a:hover {
+    text-decoration: underline;
 }

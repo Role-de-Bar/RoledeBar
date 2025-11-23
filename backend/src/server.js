@@ -72,7 +72,7 @@ process.on("SIGINT", async () => {
 });
 
 app.post("/auth/register", async (req, res) => {
-   if (!checkDb(res)) return;
+  if (!checkDb(res)) return;
   try {
     const data = userSchema.parse(req.body);
 
@@ -147,7 +147,7 @@ app.post("/auth/login", async (req, res) => {
 app.post(
   "/estabelecimento",
   authMiddleware(["PROPRIETARIO"]),
-  
+
   async (req, res) => {
     if (!checkDb(res)) return;
     try {
@@ -174,7 +174,7 @@ app.post(
 app.get(
   "/estabelecimentos",
   authMiddleware(["PROPRIETARIO", "CONSUMIDOR"]),
-  
+
   async (req, res) => {
     if (!checkDb(res)) return;
     try {
@@ -206,7 +206,122 @@ app.get(
     db = (typeof isSqliteConnected === "function" && isSqliteConnected()) ? sqlite : ((typeof isPgConnected === "function" && isPgConnected()) ? pg : null);
   }
 
-  const PORT =  3000;
+  // ============== ROTAS DE FAVORITOS ==============
+
+  // Adicionar aos favoritos
+  app.post("/favoritos/:estabelecimentoId", authMiddleware(["CONSUMIDOR", "PROPRIETARIO"]), async (req, res) => {
+    try {
+      const { estabelecimentoId } = req.params;
+      const usuarioId = req.user.id;
+
+      // Verifica se o estabelecimento existe
+      const estabelecimento = await prisma.estabelecimento.findUnique({
+        where: { id: parseInt(estabelecimentoId) }
+      });
+
+      if (!estabelecimento) {
+        return res.status(404).json({ error: "Estabelecimento não encontrado" });
+      }
+
+      // Verifica se já está favoritado
+      const favoritoExistente = await prisma.favorito.findUnique({
+        where: {
+          usuarioId_estabelecimentoId: {
+            usuarioId,
+            estabelecimentoId: parseInt(estabelecimentoId)
+          }
+        }
+      });
+
+      if (favoritoExistente) {
+        return res.status(400).json({ error: "Estabelecimento já está nos favoritos" });
+      }
+
+      // Adiciona aos favoritos
+      const favorito = await prisma.favorito.create({
+        data: {
+          usuarioId,
+          estabelecimentoId: parseInt(estabelecimentoId)
+        },
+        include: {
+          estabelecimento: true
+        }
+      });
+
+      res.status(201).json({ message: "Adicionado aos favoritos!", favorito });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Remover dos favoritos
+  app.delete("/favoritos/:estabelecimentoId", authMiddleware(["CONSUMIDOR", "PROPRIETARIO"]), async (req, res) => {
+    try {
+      const { estabelecimentoId } = req.params;
+      const usuarioId = req.user.id;
+
+      await prisma.favorito.delete({
+        where: {
+          usuarioId_estabelecimentoId: {
+            usuarioId,
+            estabelecimentoId: parseInt(estabelecimentoId)
+          }
+        }
+      });
+
+      res.json({ message: "Removido dos favoritos!" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Listar favoritos do usuário
+  app.get("/favoritos", authMiddleware(["CONSUMIDOR", "PROPRIETARIO"]), async (req, res) => {
+    try {
+      const usuarioId = req.user.id;
+
+      const favoritos = await prisma.favorito.findMany({
+        where: { usuarioId },
+        include: {
+          estabelecimento: true
+        },
+        orderBy: {
+          criadoEm: 'desc'
+        }
+      });
+
+      res.json(favoritos);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Verificar se está favoritado
+  app.get("/favoritos/check/:estabelecimentoId", authMiddleware(["CONSUMIDOR", "PROPRIETARIO"]), async (req, res) => {
+    try {
+      const { estabelecimentoId } = req.params;
+      const usuarioId = req.user.id;
+
+      const favorito = await prisma.favorito.findUnique({
+        where: {
+          usuarioId_estabelecimentoId: {
+            usuarioId,
+            estabelecimentoId: parseInt(estabelecimentoId)
+          }
+        }
+      });
+
+      res.json({ isFavorito: !!favorito });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  const PORT = 3000;
   app.listen(PORT, () => console.log(`🚀 Servidor rodando na porta ${PORT}`));
 })();
 

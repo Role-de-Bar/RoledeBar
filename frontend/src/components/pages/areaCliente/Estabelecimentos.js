@@ -1,4 +1,5 @@
 import './Estabelecimentos.css';
+import BotaoFavorito from '../../BotaoFavorito';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { X } from "lucide-react";

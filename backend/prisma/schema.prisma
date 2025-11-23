@@ -21,3 +21,51 @@ enum TipoUsuario {
   PROPRIETARIO
   CONSUMIDOR
 }
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int                @id @default(autoincrement())
+  nome             String
+  email            String             @unique
+  senha            String
+  tipo             TipoUsuario
+  criadoEm         DateTime           @default(now())
+  estabelecimentos Estabelecimento[]
+  favoritos        Favorito[]
+}
+
+model Estabelecimento {
+  id             Int        @id @default(autoincrement())
+  nome           String
+  endereco       String
+  tipo           String
+  comodidades    String[]
+  proprietarioId Int
+  proprietario   User       @relation(fields: [proprietarioId], references: [id])
+  criadoEm       DateTime   @default(now())
+  favoritos      Favorito[]
+}
+
+model Favorito {
+  id                Int             @id @default(autoincrement())
+  usuarioId         Int
+  estabelecimentoId Int
+  criadoEm          DateTime        @default(now())
+  usuario           User            @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, estabelecimentoId])
+}
+
+enum TipoUsuario {
+  PROPRIETARIO
+  CONSUMIDOR
+}

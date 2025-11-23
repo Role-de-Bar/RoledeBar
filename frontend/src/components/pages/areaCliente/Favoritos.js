@@ -1,55 +1,99 @@
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import CardEstabelecimentos from "../../estabelecimentos/CardEstabelecimento";
-import './Favoritos.css'
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import './Favoritos.css';
 
-function Favoritos({ setIsLogged, usuarioLogado }) {
-  const usuario = usuarioLogado;
-  const navigate = useNavigate();
-
-  const [estabelecimentosFavoritos, setEstabelecimentosFavoritos] = useState([]);
-
-  function carregarFavoritos() {
-    const favoritos = JSON.parse(localStorage.getItem("favoritos")) || {};
-    const favoritosDoUsuario = favoritos[usuario?.id] || [];
-    const estabelecimentos = JSON.parse(localStorage.getItem("estabelecimentos")) || [];
-
-    const filtrados = favoritosDoUsuario.map(index => estabelecimentos[index]);
-    setEstabelecimentosFavoritos(filtrados);
-  }
+const Favoritos = ({ usuarioLogado }) => {
+  const [favoritos, setFavoritos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!usuario) {
-      setIsLogged(false);
-      localStorage.setItem("isLogged", "false");
-      navigate('/');
-    } else {
-      setIsLogged(true);
-      localStorage.setItem("isLogged", "true");
-      carregarFavoritos();
-    }
+    carregarFavoritos();
   }, []);
 
-  const voltar = () => {
-    navigate("/estabelecimentos");
+  // Carrega os favoritos do usuário via API
+  const carregarFavoritos = async () => {
+    if (!usuarioLogado) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:3000/favoritos', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error('Erro ao carregar favoritos');
+
+      const data = await response.json();
+      setFavoritos(data);
+    } catch (error) {
+      console.error('Erro ao carregar favoritos:', error);
+      alert('Erro ao carregar favoritos');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return (
-    <main className="main-favoritos">
-      <div className="cabecalho-favoritos">
-        <button onClick={voltar}>Voltar</button>
-      </div>
-      <section className="listagem-favoritos">
-        <h1>Favoritos </h1>
+  // Remove um favorito
+  const removerFavorito = async (estabelecimentoId) => {
+    if (!window.confirm('Deseja remover este estabelecimento dos favoritos?')) return;
 
-        {estabelecimentosFavoritos.length === 0 ? (
-          <p>Você ainda não adicionou nenhum bar aos favoritos.</p>
-        ) : (
-          <CardEstabelecimentos estabelecimentos={estabelecimentosFavoritos} usuario={usuario} isFavoritosPage={true} onAtualizarFavoritos={carregarFavoritos} />
-        )}
-      </section>
-    </main>
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3000/favoritos/${estabelecimentoId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error('Erro ao remover favorito');
+
+      // Atualiza a lista localmente
+      setFavoritos(favoritos.filter(f => f.estabelecimentoId !== estabelecimentoId));
+      alert('Removido dos favoritos!');
+    } catch (error) {
+      console.error('Erro ao remover favorito:', error);
+      alert('Erro ao remover favorito');
+    }
+  };
+
+  if (loading) return <div>Carregando...</div>;
+
+  return (
+    <div className="favoritos-container">
+      <h1>❤️ Meus Favoritos</h1>
+
+      {favoritos.length === 0 ? (
+        <div className="vazio">
+          <p>Você ainda não tem favoritos</p>
+          <Link to="/estabelecimentos">Ver Estabelecimentos</Link>
+        </div>
+      ) : (
+        <div className="lista-favoritos">
+          {favoritos.map((favorito) => (
+            <div key={favorito.id} className="card-favorito">
+              <h3>{favorito.estabelecimento.nome}</h3>
+              <p>📍 {favorito.estabelecimento.endereco}</p>
+              <p>🏷️ {favorito.estabelecimento.tipo}</p>
+
+              <div className="acoes">
+                <Link to={`/infosEstabelecimento/${favorito.estabelecimento.id}`}>
+                  Ver Detalhes
+                </Link>
+                <button onClick={() => removerFavorito(favorito.estabelecimentoId)}>
+                  Remover
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
-}
+};
 
 export default Favoritos;

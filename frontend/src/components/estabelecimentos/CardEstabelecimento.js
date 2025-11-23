@@ -1,7 +1,6 @@
 import './CardEstabelecimentos.css';
 import { useNavigate } from 'react-router-dom';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import DeleteIcon from '@mui/icons-material/Delete';
+import BotaoFavorito from '../BotaoFavorito';
 
 function CardEstabelecimentos({ estabelecimentos, usuario, isFavoritosPage = false, onAtualizarFavoritos }) {
   const navigate = useNavigate();
@@ -11,47 +10,6 @@ function CardEstabelecimentos({ estabelecimentos, usuario, isFavoritosPage = fal
       navigate(`/infosEstabelecimento/${index}`);
     } else {
       alert("Somente usuários cadastrados podem visualizar as informações.\nFaça seu cadastro!");
-    }
-  }
-
-  function favoritar(index) {
-    if (usuario) {
-      const idUsuario = usuario.id;
-      const idEstabelecimento = index;
-
-      const favoritos = JSON.parse(localStorage.getItem("favoritos")) || {};
-
-      if (!favoritos[idUsuario]) {
-        favoritos[idUsuario] = [];
-      }
-
-      if (favoritos[idUsuario].includes(idEstabelecimento)) {
-        alert("Este estabelecimento já está nos seus favoritos.");
-      } else {
-        favoritos[idUsuario].push(idEstabelecimento);
-        localStorage.setItem("favoritos", JSON.stringify(favoritos));
-        alert("Estabelecimento adicionado aos favoritos!");
-      }
-    } else {
-      alert("Somente usuários cadastrados podem favoritar os bares.\nFaça seu cadastro!");
-    }
-  }
-
-  function desfavoritar(index) {
-    const idUsuario = usuario.id;
-    const idEstabelecimento = index;
-
-    const favoritos = JSON.parse(localStorage.getItem("favoritos")) || {};
-
-    if (favoritos[idUsuario]) {
-      favoritos[idUsuario] = favoritos[idUsuario].filter(id => id !== idEstabelecimento);
-      localStorage.setItem("favoritos", JSON.stringify(favoritos));
-      alert("Estabelecimento removido dos favoritos!");
-
-      // Chama função para atualizar a lista na página de favoritos
-      if (onAtualizarFavoritos) {
-        onAtualizarFavoritos();
-      }
     }
   }
 
@@ -71,15 +29,17 @@ function CardEstabelecimentos({ estabelecimentos, usuario, isFavoritosPage = fal
               <h2>{estab.nome}</h2>
               <p>{`${estab.rua}, ${estab.numero}, - ${estab.bairro}`}</p>
               <p className="tag-musica">🎵 {estab.estiloMusical}</p>
-              <div>
-                <button onClick={() => infos(index)} className="botao-card">Ver mais</button>
-                {isFavoritosPage ? (
-                  <button onClick={() => desfavoritar(index)} className="botao-card desfavoritar"> Desfavoritar
-                  </button>
-                ) : (
-                  <button onClick={() => favoritar(index)} className="botao-card">Favoritar
-                  </button>
-                )}
+              <div className="botoes-card">
+                <button onClick={() => infos(index)} className="botao-card">
+                  Ver mais
+                </button>
+
+                {/* Botão de Favorito integrado */}
+                <BotaoFavorito
+                  estabelecimentoId={estab.id}
+                  usuarioLogado={usuario}
+                  onAtualizarFavoritos={onAtualizarFavoritos}
+                />
               </div>
             </div>
           </div>

@@ -1,0 +1,30 @@
+.botao-favorito {
+    padding: 10px 20px;
+    border: 2px solid #ff6b6b;
+    border-radius: 25px;
+    background-color: white;
+    color: #ff6b6b;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.botao-favorito:hover {
+    background-color: #ff6b6b;
+    color: white;
+    transform: scale(1.05);
+}
+
+.botao-favorito.favoritado {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.botao-favorito:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
