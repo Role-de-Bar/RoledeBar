@@ -206,7 +206,7 @@ app.get(
     db = (typeof isSqliteConnected === "function" && isSqliteConnected()) ? sqlite : ((typeof isPgConnected === "function" && isPgConnected()) ? pg : null);
   }
 
-  const PORT = process.env.PORT || 3000;
+  const PORT =  3000;
   app.listen(PORT, () => console.log(`🚀 Servidor rodando na porta ${PORT}`));
 })();
 

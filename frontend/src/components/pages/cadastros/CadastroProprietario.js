@@ -16,7 +16,7 @@ function CadastroProprietario({ setIsLogged }) {
   const [senha, setSenha] = useState("");
   const [confirmacao, setConfirmacao] = useState("");
 
-  const adicionarProprietario = (e) => {
+  const adicionarProprietario = async(e) => {
     e.preventDefault();
     if (senha === confirmacao) {
       const proprietariosSalvos = JSON.parse(localStorage.getItem("proprietarios")) || [];
@@ -27,6 +27,14 @@ function CadastroProprietario({ setIsLogged }) {
         email,
         senha
       };
+
+       const response = await axios.post('http://localhost:3000/auth/register', {
+                    nome,
+                    email,
+                    senha,
+                    tipo,
+                });
+
       proprietariosSalvos.push(novoProprietario);
       localStorage.setItem("proprietarios", JSON.stringify(proprietariosSalvos));
       setNome("");
