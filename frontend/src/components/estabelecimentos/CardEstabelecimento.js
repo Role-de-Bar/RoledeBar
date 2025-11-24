@@ -107,7 +107,7 @@ function CardEstabelecimentos({
   ), [isFavoritosPage]);
 
   if (estabelecimentos.length === 0) {
-    return <section className="lista-estabelecimentos">{mensagemVazia}</section>;
+    return <section className={`lista-estabelecimentos ${usuario ? 'logado' : ''}`}>{mensagemVazia}</section>;
   }
 
   return (
@@ -118,7 +118,7 @@ function CardEstabelecimentos({
         </div>
       )}
 
-      <section className="lista-estabelecimentos">
+      <section className={`lista-estabelecimentos ${usuario ? 'logado' : ''}`}>
         {estabelecimentos.map((estab, index) => {
           const idEstabelecimento = estab.id || index;
           const ehFavorito = isFavorito(idEstabelecimento);

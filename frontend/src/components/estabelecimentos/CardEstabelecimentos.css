@@ -1,4 +1,3 @@
-/* CardEstabelecimentos.css - Design System Aprimorado */
 
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;500;700&display=swap');
 
@@ -14,7 +13,7 @@
 
 
 .lista-estabelecimentos {
-  width: 100%;
+  width: 100vw;
   max-width: var(--max-width);
   margin: 0 auto;
   display: grid;
@@ -22,10 +21,14 @@
   gap: 1.5rem;
   padding: 0 1rem 2rem;
   box-sizing: border-box;
-  position: relative;
+  position:relative;
+  margin-top: 5vh;
 }
 
-/* Mantém 1 coluna até tablet grande */
+.lista-estabelecimentos.logado{
+  margin-top: 10vh;
+}
+
 @media (min-width: 900px) and (max-width: 1279px) {
   .lista-estabelecimentos {
     grid-template-columns: 1fr;
@@ -37,7 +40,7 @@
   }
 }
 
-/* Desktop: 1 coluna centralizada (design banner) */
+
 @media (min-width: 1280px) {
   .lista-estabelecimentos {
     grid-template-columns: 1fr;
@@ -63,7 +66,7 @@
   cursor: pointer;
 }
 
-/* Respeita preferência de movimento reduzido */
+
 @media (prefers-reduced-motion: reduce) {
   .card-banner,
   .favorite-btn,
@@ -74,13 +77,13 @@
   }
 }
 
-/* Hover: levanta o card */
+
 .card-banner:hover {
   transform: translateY(-8px);
   box-shadow: 0 32px 80px rgba(11, 15, 20, 0.16);
 }
 
-/* Gradiente para legibilidade do texto */
+
 .card-gradient {
   position: absolute;
   inset: 0;
@@ -93,9 +96,7 @@
   pointer-events: none;
 }
 
-/* ============================================
-   BOTÃO DE FAVORITAR (TOP-RIGHT)
-   ============================================ */
+
 .favorite-btn {
   position: absolute;
   right: 14px;
@@ -126,15 +127,12 @@
   transform: scale(0.95);
 }
 
-/* Estado quando favoritado */
+
 .favorite-btn.is-favorite {
   background: rgba(255, 71, 87, 0.25);
   border-color: rgba(255, 71, 87, 0.4);
 }
 
-/* ============================================
-   CONTEÚDO DO CARD
-   ============================================ */
 .card-content {
   position: relative;
   z-index: 5;
@@ -148,9 +146,6 @@
   box-sizing: border-box;
 }
 
-/* ============================================
-   TEXTO DO CARD
-   ============================================ */
 .card-text {
   color: #fff;
   max-width: 65%;
@@ -191,9 +186,7 @@
   -webkit-backdrop-filter: blur(8px);
 }
 
-/* ============================================
-   AÇÕES DO CARD (BOTÕES)
-   ============================================ */
+
 .card-actions {
   display: flex;
   gap: 0.65rem;
@@ -230,7 +223,7 @@
   transform: translateY(-2px);
 }
 
-/* Botão ghost (transparente) */
+
 .btn-pill.ghost {
   background: rgba(255, 255, 255, 0.15);
   color: #fff;
@@ -246,15 +239,13 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Estado favoritado no botão ghost */
+
 .btn-pill.ghost.is-favorite {
   background: rgba(255, 71, 87, 0.2);
   border-color: rgba(255, 71, 87, 0.3);
 }
 
-/* ============================================
-   RESPONSIVIDADE - TABLET E INTERMEDIÁRIO
-   ============================================ */
+
 @media (max-width: 1279px) and (min-width: 621px) {
   .card-banner {
     aspect-ratio: 16 / 5.5;
@@ -275,9 +266,6 @@
   }
 }
 
-/* ============================================
-   RESPONSIVIDADE - MOBILE
-   ============================================ */
 @media (max-width: 620px) {
   .card-banner {
     aspect-ratio: 4 / 3;
@@ -322,9 +310,6 @@
   }
 }
 
-/* ============================================
-   RESPONSIVIDADE - SMARTPHONES PEQUENOS
-   ============================================ */
 @media (max-width: 420px) {
   .card-content {
     padding: 12px;
@@ -341,9 +326,7 @@
   }
 }
 
-/* ============================================
-   MENSAGEM DE LISTA VAZIA
-   ============================================ */
+
 .mensagem-vazia {
   color: #666;
   padding: 3rem 2rem;
@@ -356,9 +339,7 @@
   line-height: 1.6;
 }
 
-/* ============================================
-   TOAST DE FEEDBACK
-   ============================================ */
+
 .feedback-toast {
   position: fixed;
   bottom: 30px;
@@ -390,27 +371,21 @@
   }
 }
 
-/* ============================================
-   ACESSIBILIDADE - FOCUS STATES
-   ============================================ */
+
 .favorite-btn:focus-visible,
 .btn-pill:focus-visible {
   outline: 3px solid rgba(246, 110, 6, 0.5);
   outline-offset: 3px;
 }
 
-/* ============================================
-   FALLBACK PARA IMAGEM NÃO CARREGADA
-   ============================================ */
+
 .card-banner[style*="background-image: none"],
 .card-banner[style="background-image: none;"] {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   background-size: cover;
 }
 
-/* ============================================
-   SUPORTE PARA DARK MODE (OPCIONAL)
-   ============================================ */
+
 @media (prefers-color-scheme: dark) {
   .mensagem-vazia {
     background: #1a1a1a;

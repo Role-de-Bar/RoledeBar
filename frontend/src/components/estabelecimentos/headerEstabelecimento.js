@@ -1,12 +1,13 @@
 import { Menu, User, Heart, LogOut, Search, Grip,LayoutGrid  } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./headerEstabelecimento.css";
 
 function HeaderEstabelecimento({ onToggleFiltros }) {
   const [menuMobileOpen, setMenuMobileOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [usuarioLogado, setUsuarioLogado] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     // Recupera dados do usuário do localStorage
     const userData = localStorage.getItem('usuarioLogado');
@@ -28,18 +29,18 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
     localStorage.removeItem('usuarioLogado');
     setUsuarioLogado(null);
     setIsModalOpen(false);
-    window.location.href = "/";
+    navigate("/");
   };
 
   const goEstabelecimentos = () => {
-    window.location.href = "/cadastroEstabelecimento";
+   navigate("/cadastroEstabelecimento");
   };
 
   const goToLoginOrPerfil = () => {
     if (usuarioLogado) {
-      window.location.href = "/perfil";
+      navigate("/perfil");
     } else {
-      window.location.href = "/login";
+      navigate("/login");
     }
   };
 

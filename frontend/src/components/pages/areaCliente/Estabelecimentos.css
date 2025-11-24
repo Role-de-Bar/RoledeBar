@@ -130,6 +130,11 @@
   align-items: start;
   flex-direction: column;
   padding-bottom: 4em;
+  margin-top: 12vh;
+}
+
+.filtros.logadp{
+  margin: 0vh;
 }
 
 @media (max-width:1660px) {

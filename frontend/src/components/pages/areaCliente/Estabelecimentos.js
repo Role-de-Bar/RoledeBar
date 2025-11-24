@@ -14,8 +14,7 @@ import SelectTipoMusica from '../../form/SelectTipoMusica';
 import { AnimatePresence, motion } from "framer-motion";
 import ComodidadesFilter from '../../form/ComodidadesFiler';
 
-function Estabelecimentos({ setIsLogged, usuarioLogado }) {
-  const navigate = useNavigate();
+function Estabelecimentos({ setIsLogged, usuarioLogado }) { 
   const usuario = usuarioLogado;
 
   const [tipoSelecionado, setTipoSelecionado] = useState("");
@@ -70,7 +69,7 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
         <AnimatePresence>
           {filtrosAbertos && (
             <motion.aside
-              className="filtros"
+              className={`filtros${usuario ? ' logado' : ''}`}
               initial={{ opacity: 0, x: 60 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 60 }}

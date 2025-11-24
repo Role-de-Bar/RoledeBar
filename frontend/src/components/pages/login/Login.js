@@ -91,7 +91,7 @@ function Login({ setIsLogged, setUsuarioLogado }) {
 
       // Salva token e o usuário no armazenamento
       localStorage.setItem("token", data.token);
-      localStorage.setItem("usuario", JSON.stringify(data.usuario));
+      localStorage.setItem("usuarioLogado", JSON.stringify(data.usuario));
 
       const user = data.usuario;
       
