@@ -1,0 +1,293 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+.header {
+  background-color: #0D0D0D;
+  width: 100vw;
+  height: 13vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+.alingNabar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logoApp {
+  height: 100%;
+}
+
+.divLogo {
+  height: 15vh;
+  width: 8vw;
+  float: left;
+}
+
+.navBar {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+.listaHeader {
+  display: flex;
+  list-style: none;
+}
+
+
+
+.listaHeader a {
+  text-decoration: none;
+  color: #ffff;
+  font-family: "Fredoka", serif;
+  font-size: 1.2em;
+  font-weight: 600;
+  margin: 1vw;
+  font-style: normal;
+  transition: 0.5s all;
+}
+
+.linkLogin {
+  background: #F25D07;
+  padding: 1vw;
+  border-radius: 10px;
+}
+
+
+.linkServicos:hover {
+  color: rgb(192, 122, 10);
+}
+
+.linkSobre:hover {
+  color: rgb(192, 122, 10);
+}
+
+.linkContato:hover {
+  color: rgb(192, 122, 10);
+}
+
+.botoesMenu {
+  display: flex;
+  width: 60%;
+}
+
+.search-bar {
+  width: 40%;
+  height: 2.4em;
+  border-radius: 4px;
+  border: none;
+  text-align: center;
+}
+
+.menuIcones {
+  display: flex;
+  width: 30%;
+  height: 2.4em;
+  justify-content: space-between;
+}
+
+.perfil,
+.favoritos,
+.meus_estabelecimentos,
+.sair {
+  color: white;
+}
+
+.perfil:hover,
+.favoritos:hover,
+.meus_estabelecimentos:hover,
+.sair:hover {
+  color: rgb(192, 122, 10);
+}
+
+/* Container principal */
+.navBar {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  /* logo esquerda, links direita */
+  align-items: center;
+  padding: 0 2rem;
+  background: #0D0D0D;
+  height: 13vh;
+  position: relative;
+  z-index: 1000;
+}
+
+/* Logo */
+
+
+
+/* Lista de links */
+.listaHeader {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  align-items: center;
+  transition: right 0.3s ease-in-out;
+  margin-top: 2vh;
+}
+
+.listaHeader li {
+  display: flex;
+  align-items: center;
+}
+
+.listaHeader a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #fff;
+  font-family: "Fredoka", sans-serif;
+  font-size: 1.1em;
+  font-weight: 500;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.listaHeader a:hover {
+  transform: translateY(-2px);
+}
+
+/* Ícones */
+.icon {
+  stroke-width: 2.2px;
+}
+
+/* Botão login com destaque */
+.linkLogin {
+  background: #F25D07;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.linkLogin:hover {
+  background: #ff762f;
+  color: #fff;
+}
+
+/* Botão hamburger */
+.hamburgerBtn {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  z-index: 1100;
+}
+
+
+
+
+@media (max-width: 1600px) {
+  .listaHeader {
+    margin-top: 2vh;
+  }
+}
+
+
+@media (max-width: 1500px) {
+  .divLogo {
+    display: flex;
+    justify-content: center;
+  }
+
+  .logoApp {
+    height: 100px;
+    margin-left: 15vw;
+    margin-top: 2vh;
+  }
+
+}
+
+
+
+@media (max-width: 1395px) {
+  .divLogo {
+    display: flex;
+    justify-content: center;
+  }
+
+  .logoApp {
+     height: 100px;
+    margin-left: 10vw;
+    margin-top: 2.5vh;
+  }
+
+}
+
+
+@media (max-width: 1330px) {
+  .divLogo {
+    display: flex;
+    justify-content: center;
+  }
+
+  .logoApp {
+    height: 90px;
+      margin-top: 3vh;
+  }
+
+}
+
+/* Mobile */
+@media (max-width: 930px) {
+  .hamburgerBtn {
+    display: block;
+    margin-top: 2vh;
+  }
+
+  .listaHeader {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(13, 13, 13, 0.95);
+    backdrop-filter: blur(8px);
+    width: 70%;
+    height: 100vh;
+    transition: right 0.3s ease-in-out;
+    z-index: 1000;
+  }
+
+  .listaHeader.open {
+    right: 0;
+  }
+
+  .listaHeader li {
+    margin: 1.5rem 0;
+  }
+
+  .divLogo {
+    display: flex;
+    justify-content: center;
+  }
+
+  .logoApp {
+    height: 90px;
+     margin-left: 20vw;
+  }
+}
+
+@media (max-width:600px){
+  .logoApp{
+    margin-left: 15vw;
+  }
+}
+
+@media (max-width:490px){
+  .logoApp{
+    margin-left: 25vw;
+  }
+}

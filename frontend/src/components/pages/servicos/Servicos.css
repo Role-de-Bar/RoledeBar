@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
+
+:root {
+  --laranja: #ff7043;
+  --laranja-gradiente-start: #f8a60d;
+  --laranja-gradiente-end: #f66e06;
+  --laranja-claro: #fadc83;
+}
+
+.servicos-container {
+  width: 85vw;
+  margin: 4rem auto;
+  font-family: 'Fredoka', sans-serif;
+  padding: 2rem;
+  background: linear-gradient(to right, var(--laranja-gradiente-start), var(--laranja-gradiente-end));
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.titulo {
+  text-align: center;
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.descricao {
+  text-align: center;
+  font-size: 1.2rem;
+  color: white;
+  margin-bottom: 2.5rem;
+}
+
+.servico-card {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  gap: 1.5rem;
+}
+
+.servico-card.invertido {
+  flex-direction: row-reverse;
+}
+
+.icone {
+  flex-shrink: 0;
+  font-size: 3rem;
+  color: var(--laranja-gradiente-end);
+}
+
+.conteudo h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #222;
+}
+
+.conteudo p {
+  font-size: 1.2rem;
+  color: black;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .servico-card,
+  .servico-card.invertido {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .icone {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+}

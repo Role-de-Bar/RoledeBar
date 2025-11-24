@@ -1,0 +1,836 @@
+    @import url('https://fonts.googleapis.com/css2?family=Monaco&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Mukta:wght@200;300;400;500;600;700;800&display=swap');
+
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .imgLoginfundo {
+      flex: 1;
+      background: #222;
+      display: flex;
+      align-items: stretch;
+    }
+
+    .imgLoginfundo img {
+      width: 51vw;
+      height: 100vh;
+      object-fit: cover;
+    }
+
+    .imgLoginfundoMobile {
+      display: none;
+    }
+
+    .section_login {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .artigo_form {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      width: 100%;
+      height: 60vh;
+
+    }
+
+    .artigo_loginText h2 {
+      font-family: "Mukta", sans-serif;
+      font-weight: bold;
+      font-size: clamp(1.5rem, 4vw, 3.5rem);
+    }
+
+
+    .artigo_loginText p {
+      font-family: "Mukta", sans-serif;
+      font-weight: 400;
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      color: #5D5D5D;
+    }
+
+    .form_login {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      width: clamp(250px, 80%, 400px);
+      height: 60%;
+
+    }
+
+    .form_login input {
+      width: 22vw;
+      padding: 1vw;
+      border-radius: 10px;
+      border: 1px solid #CACACA;
+      background: #FFFFFF;
+      color: #B8B8B8;
+      font-size: clamp(0.9rem, 2vw, 1rem);
+    }
+
+    .form_login button {
+      width: 24vw;
+      padding: 0.7vw;
+      border-radius: 10px;
+      border: none;
+      background: #FF7A00;
+      color: #FFFFFF;
+      font-family: "Mukta", sans-serif;
+      font-weight: 700;
+      font-size: 1.2em;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .form_login input::placeholder {
+      font-family: "Mukta", sans-serif;
+      font-size: 1.2em;
+      color: #B8B8B8;
+    }
+
+    .form_login label {
+      font-family: "Mukta", sans-serif;
+      font-weight: 500;
+      font-size: 1.2em;
+      color: #5D5D5D;
+    }
+
+    #email {
+      margin-bottom: 20px;
+    }
+
+    .links_cadastro_recuperacao {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .links_cadastro_recuperacao a {
+      font-family: "Mukta", sans-serif;
+      text-decoration: none;
+      cursor: pointer;
+      margin: 1vw;
+    }
+
+    #recuperar_senha a {
+      color: #777777;
+      font-size: 1.2em;
+    }
+
+    #fazer_cadastro a {
+      color: #000000;
+      font-size: 1.2em;
+      font-weight: 600;
+    }
+
+    .iconeInput {
+      position: absolute;
+      margin-left: 22vw;
+      margin-top: 1vw;
+      color: #B8B8B8;
+    }
+
+
+    .titulo-escolha {
+      font-size: 1.4rem;
+      font-weight: bold;
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    .tipo-usuario-container {
+      display: flex;
+      justify-content: center;
+      padding: 1rem 0;
+    }
+
+    .botoes-escolha {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-tipo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+      background: #f4f4f4;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #333;
+      min-width: 150px;
+      z-index: 100;
+      margin-top: 1vh;
+    }
+
+
+    .btn-tipo:hover {
+      background: #eaeaea;
+      transform: translateY(-2px);
+    }
+
+    .btn-tipo.ativo {
+      background: #e6f0ff;
+      border-color: #2d8cff;
+      color: #2d8cff;
+    }
+
+    .btn-tipo .iconeUser {
+      color: inherit;
+    }
+
+    .MuiDialogActions-root {
+      justify-content: space-between;
+      padding: 1rem;
+    }
+
+    .div-logout {
+      position: absolute;
+      top: 3rem;
+      right: 4rem;
+      cursor: pointer;
+      z-index: 200;
+    }
+
+    .div-logout a {
+      color: #000000;
+    }
+
+
+    @media (max-width:1557px) {
+      .form_login input {
+        width: 27vw;
+      }
+
+      .iconeInput {
+        margin-left: 27vw;
+      }
+
+      .form_login button {
+        width: 29vw;
+      }
+    }
+
+    @media (max-width:1451px) {
+      .artigo_loginText h2 {
+        font-size: 3.2em;
+      }
+
+      .artigo_loginText p {
+        font-size: 1.2em;
+      }
+    }
+
+
+    @media (max-width:1300px) {
+      .artigo_loginText h2 {
+        font-size: 3.2em;
+      }
+
+      .artigo_loginText p {
+        font-size: 1.2em;
+      }
+
+      .form_login input {
+        width: 31vw;
+      }
+
+      .iconeInput {
+        margin-left: 30vw;
+      }
+
+      .form_login button {
+        width: 33vw;
+      }
+    }
+
+    @media (max-width:1200px) {
+      .artigo_loginText h2 {
+        font-size: 3.2em;
+      }
+
+      .artigo_loginText p {
+        font-size: 1.2em;
+      }
+
+      .form_login input {
+        width: 33vw;
+      }
+
+      .iconeInput {
+        margin-left: 30vw;
+      }
+
+      .form_login button {
+        width: 35vw;
+      }
+
+      .iconeInput {
+        margin-left: 32vw;
+      }
+    }
+
+
+    @media (max-width:1117px) {
+      .artigo_loginText h2 {
+        font-size: 2.7em;
+      }
+
+      .artigo_loginText p {
+        font-size: 1.2em;
+      }
+
+      .form_login input {
+        width: 30vw;
+      }
+
+      .form_login button {
+        width: 32vw;
+      }
+
+      .iconeInput {
+        margin-left: 29vw;
+      }
+
+      #recuperar_senha {
+        font-size: 0.8em;
+      }
+
+      #fazer_cadastro {
+        font-size: 0.8em;
+      }
+    }
+
+    @media (max-width:1040px) {
+
+      .imgLoginfundo {
+        display: none;
+      }
+
+      .section_login {
+        justify-content: center;
+      }
+
+      .artigo_form {
+        max-width: 100%;
+        padding: 2rem;
+        margin-top: 17vh;
+      }
+
+      .form_login {
+        width: 100%;
+        max-width: 500px;
+        margin-top: 0vh;
+      }
+
+
+      .artigo_loginText h2 {
+        font-size: 3em;
+      }
+
+      .artigo_loginText p {
+        font-size: 1.2em;
+      }
+
+
+      .form_login input {
+        width: 36vw;
+        padding: 1.5vw;
+      }
+
+      .form_login button {
+        width: 39vw;
+      }
+
+      .iconeInput {
+        margin-left: 35vw;
+        margin-top: 2vh;
+      }
+
+      #recuperar_senha {
+        font-size: 0.9em;
+        margin-top: 1vh;
+      }
+
+      #fazer_cadastro {
+        font-size: 0.9em;
+        margin-top: 1vh;
+      }
+    }
+
+    @media (max-width:1024px) {
+
+      .imgLoginfundo {
+        display: none;
+      }
+
+      .section_login {
+        justify-content: center;
+      }
+
+      .artigo_form {
+        max-width: 100%;
+        padding: 2rem;
+        margin-top: 17vh;
+      }
+
+      .form_login {
+        width: 100%;
+        max-width: 500px;
+        margin-top: 0vh;
+      }
+
+
+      .artigo_loginText h2 {
+        font-size: 3em;
+      }
+
+      .artigo_loginText p {
+        font-size: 1.2em;
+      }
+
+
+      .form_login input {
+        width: 36vw;
+        padding: 1.5vw;
+      }
+
+      .form_login button {
+        width: 39vw;
+      }
+
+      .iconeInput {
+        margin-left: 35vw;
+        margin-top: 2vh;
+      }
+
+      #recuperar_senha {
+        font-size: 0.9em;
+        margin-top: 1vh;
+      }
+
+      #fazer_cadastro {
+        font-size: 0.9em;
+        margin-top: 1vh;
+      }
+
+      .div-logout {
+        margin-top: 8vh;
+        margin-right: 60vw;
+      }
+    }
+
+
+    @media (max-width:954px) {
+      .artigo_loginText h2 {
+        font-size: 2.7em;
+      }
+
+      .artigo_loginText p {
+        font-size: 1.2em;
+      }
+
+      .form_login {
+        margin-top: 0vh;
+      }
+
+      .form_login input {
+        padding: 1.5vw;
+        width: 36vw;
+      }
+
+      .iconeInput {
+        margin-top: 1.5vh;
+      }
+
+      .form_login button {
+        width: 39vw;
+      }
+    }
+
+    @media (max-width:850px) {
+      .artigo_loginText h2 {
+        font-size: 3.5em;
+      }
+
+      .artigo_loginText p {
+        font-size: 1.3em;
+      }
+
+      .form_login {
+        margin-top: 0vh;
+      }
+
+      .form_login input {
+        padding: 1.5vw;
+        font-size: 0.8em;
+        width: 50vw;
+      }
+
+      .form_login button {
+        width: 53vw;
+      }
+
+      .iconeInput {
+        margin-left: 48vw;
+      }
+
+      #recuperar_senha {
+        font-size: 1em;
+      }
+
+      #fazer_cadastro {
+        font-size: 1em;
+      }
+
+      .div-logout {
+        margin-top: 5vh;
+        margin-right: 65vw;
+      }
+    }
+
+
+    @media (max-width:796px) {
+      .artigo_loginText h2 {
+        font-size: 3em;
+      }
+
+      .artigo_loginText p {
+        font-size: 1.2em;
+      }
+
+      .form_login input {
+        padding: 1.5vw;
+        font-size: 0.8em;
+      }
+
+      .div-logout {
+        margin-top: 5vh;
+        margin-right: 65vw;
+      }
+    }
+
+
+    @media (max-width:750px) {
+
+      .artigo_form {
+        margin-top: 15vh;
+      }
+
+      .section_login {
+        flex-direction: column;
+      }
+
+      .artigo_loginText {
+        margin-top: 5vh;
+      }
+
+      .form_login {
+        margin-top: 5vh;
+      }
+
+      .imgLoginfundoMobile {
+        display: flex;
+      }
+
+      .imgLoginfundoMobile img {
+        margin-top: 6vh;
+        width: 75vw;
+        height: 21vh;
+      }
+
+      .artigo_loginText h2 {
+        font-size: 3.5em;
+      }
+
+      .artigo_loginText p {
+        font-size: 1.2em;
+      }
+
+      .form_login input {
+        padding: 1.5vw;
+        font-size: 0.8em;
+        width: 67vw;
+      }
+
+      .form_login button {
+        width: 70vw;
+      }
+
+      .iconeInput {
+        margin-left: 65vw;
+        margin-top: 1vh;
+      }
+
+      .div-logout {
+        margin-top: 0vh;
+        margin-right: 72vw;
+      }
+
+      #recuperar_senha {
+        font-size: 1em;
+        margin-top: 1vh;
+      }
+
+      #fazer_cadastro {
+        font-size: 1em;
+        margin-top: 1vh;
+      }
+    }
+
+    @media (max-width: 600px) {
+
+      .artigo_loginText h2 {
+        font-size: 3em;
+      }
+
+      .artigo_loginText p {
+        font-size: 1em;
+      }
+
+      .iconeInput {
+        size: 0.2em;
+      }
+
+
+      .botoes-escolha {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .btn-tipo {
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .div-logout {
+        margin-top: 1vh;
+        margin-right: 70vw;
+      }
+    }
+
+
+    @media (max-width:540px) {
+      .div-logout {
+        margin-top: -3vh;
+        margin-right: 70vw;
+      }
+
+      #recuperar_senha {
+        margin-top: 3vh;
+      }
+
+      #fazer_cadastro {
+        margin-top: 3vh;
+      }
+
+    }
+
+
+    @media (max-width:500px) {
+
+      .iconeInput {
+        size: 0.2em;
+      }
+
+      .div-logout {
+        margin-top: 1vh;
+        margin-right: 65vw;
+      }
+
+      .artigo_loginText h2 {
+        font-size: 2.4em;
+      }
+
+      .artigo_loginText p {
+        font-size: 1em;
+      }
+
+      #recuperar_senha {
+        font-size: 0.7em;
+      }
+
+      #fazer_cadastro {
+        font-size: 0.7em;
+      }
+
+    }
+
+
+    @media (max-width:450px) {
+
+      .imgLoginfundoMobile {
+        display: none;
+      }
+
+      .iconeInput {
+        size: 0.2em;
+      }
+
+      .div-logout {
+        margin-top: 4vh;
+        margin-right: 60vw;
+      }
+
+      .form_login {
+        margin-top: 1vh;
+      }
+
+      .artigo_loginText {
+        margin-top: 1vh;
+      }
+
+      .artigo_loginText h2 {
+        font-size: 2em;
+      }
+
+      .artigo_loginText p {
+        font-size: 1em;
+      }
+
+      .form_login input {
+        padding: 3vw;
+        width: 60vw;
+      }
+
+      .form_login button {
+        width: 67vw;
+      }
+
+      .iconeInput {
+        margin-left: 57vw;
+        margin-top: 1.2vh;
+      }
+
+      #recuperar_senha {
+        font-size: 0.7em;
+      }
+
+      #fazer_cadastro {
+        font-size: 0.7em;
+      }
+    }
+
+
+    @media (max-width:400px) {
+
+      .imgLoginfundoMobile {
+        display: none;
+      }
+
+      .iconeInput {
+        size: 0.2em;
+      }
+
+      .div-logout {
+        margin-top: 4vh;
+        margin-right: 60vw;
+      }
+
+      .form_login {
+        margin-top: 1vh;
+      }
+
+      .artigo_loginText {
+        margin-top: 1vh;
+      }
+
+      .artigo_loginText h2 {
+        font-size: 2em;
+      }
+
+      .artigo_loginText p {
+        font-size: 1em;
+      }
+
+      .form_login input {
+        padding: 3vw;
+        width: 60vw;
+      }
+
+      .form_login button {
+        width: 67vw;
+      }
+
+      .iconeInput {
+        margin-left: 57vw;
+        margin-top: 1.2vh;
+      }
+
+      #recuperar_senha {
+        font-size: 0.7em;
+      }
+
+      #fazer_cadastro {
+        font-size: 0.7em;
+      }
+    }
+
+    @media (max-width:350px) {
+
+      .imgLoginfundoMobile {
+        display: none;
+      }
+
+      .iconeInput {
+        size: 0.2em;
+      }
+
+      .div-logout {
+        margin-top: 4vh;
+        margin-right: 60vw;
+      }
+
+      .form_login {
+        margin-top: 0vh;
+      }
+
+      .artigo_loginText {
+        margin-top: 1vh;
+      }
+
+      .artigo_loginText h2 {
+        font-size: 2em;
+      }
+
+      .artigo_loginText p {
+        font-size: 1em;
+      }
+
+      .form_login input {
+        padding: 3vw;
+        width: 70vw;
+      }
+
+      .form_login button {
+        width: 78vw;
+      }
+
+      .iconeInput {
+        margin-left: 65vw;
+        margin-top: 1.2vh;
+      }
+
+      #recuperar_senha {
+        font-size: 0.7em;
+      }
+
+      #fazer_cadastro {
+        font-size: 0.7em;
+      }
+    }

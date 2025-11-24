@@ -1,0 +1,122 @@
+.footer {
+    background-color: #F25D07;
+    color: white;
+    padding: 4vh 2vw;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 3vh;
+}
+
+.footerAling {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2vh;
+}
+
+.Titulofooter h2 {
+    font-family: "Englebert", cursive;
+    font-size: 7em;
+    text-align: center;
+}
+
+.redeSocial {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    gap: 4vw;
+    flex-wrap: wrap;
+}
+
+.redeSocial span {
+    font-size: 1.2em;
+    font-family: "Englebert", cursive;
+    font-weight: 500;
+}
+
+.redeSocial h3 {
+    font-size: 1em;
+    font-weight: 400;
+}
+
+.Politicas {
+    margin-top: 2vh;
+}
+
+.Politicas p {
+    font-size: 0.9em;
+    line-height: 1.6em;
+    font-family: "Manrope", sans-serif;
+}
+
+.redeSlid1 {
+    display: flex;
+    flex-direction: row;
+    gap: 4vw;
+}
+
+.Telefone {
+    margin: 0;
+}
+
+.linhaFooter {
+    background-color: #fff;
+    width: 100%;
+    height: 1px;
+    opacity: 0.5;
+}
+
+.redeSlid2 {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 2vh;
+}
+
+.pFooter {
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.aFooter {
+    color: white;
+    text-decoration: none;
+    margin: 0 0.5em;
+    transition: 0.3s;
+}
+.aFooter:hover {
+    text-decoration: underline;
+}
+
+/* --- Responsividade --- */
+@media screen and (max-width: 900px) {
+    .Titulofooter h2 {
+        font-size: 4em;
+    }
+
+    .redeSocial {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .redeSlid1 {
+        flex-direction: column;
+        gap: 2vh;
+    }
+
+    .redeSlid2 {
+        flex-direction: column;
+        text-align: center;
+        gap: 1vh;
+    }
+}
