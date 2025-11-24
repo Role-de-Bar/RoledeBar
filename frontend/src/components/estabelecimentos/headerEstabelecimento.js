@@ -14,6 +14,7 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
       setUsuarioLogado(JSON.parse(userData));
     }
   }, []);
+  
 
   const goToFavoritos = () => window.location.href = "/favoritos";
   

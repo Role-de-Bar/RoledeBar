@@ -129,7 +129,6 @@
   display: flex;
   align-items: start;
   flex-direction: column;
-  margin-top: 13vh;
   padding-bottom: 4em;
 }
 
@@ -215,7 +214,6 @@
 
   .filtros {
     width: 30vw;
-    margin-top: 16vh;
     overflow: scroll;
   }
 
@@ -274,7 +272,6 @@
 
   .filtros {
      position: absolute;
-    top: 13vh;
     left: 0;
     width: 100vw;
     height: calc(100vh - 13vh);

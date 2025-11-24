@@ -1,104 +1,419 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
+/* CardEstabelecimentos.css - Design System Aprimorado */
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;500;700&display=swap');
+
+:root {
+  --accent: #f66e06;
+  --accent-2: #ff9a3c;
+  --muted: #e9eef3;
+  --card-radius: 14px;
+  --shadow: 0 18px 50px rgba(11, 15, 20, 0.08);
+  --max-width: 1180px;
+  font-family: 'Fredoka', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
 
 .lista-estabelecimentos {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  font-family: 'Fredoka', sans-serif;
-  align-items: center;
-
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 0 1rem 2rem;
+  box-sizing: border-box;
+  position: relative;
 }
 
-.card-horizontal {
-  width: 95%;
-  min-height: 7vh;
-  display: flex;
-  align-items: stretch;
-  background-color: #fff8e1;
-  border-radius: 0.8em;
-  box-shadow: 0 0.4em 1.2em rgba(0, 0, 0, 0.1);
+/* Mantém 1 coluna até tablet grande */
+@media (min-width: 900px) and (max-width: 1279px) {
+  .lista-estabelecimentos {
+    grid-template-columns: 1fr;
+    max-width: 900px;
+  }
+  
+  .card-banner {
+    max-width: 100%;
+  }
+}
+
+/* Desktop: 1 coluna centralizada (design banner) */
+@media (min-width: 1280px) {
+  .lista-estabelecimentos {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}
+
+
+.card-banner {
+  width: 100%;
+  max-width: 1120px;
+  aspect-ratio: 16 / 5;
+  border-radius: var(--card-radius);
+  background-size: cover;
+  background-position: center;
+  position: relative;
   overflow: hidden;
-  transition: transform 0.2s ease;
-}
-
-.card-horizontal:hover {
-  transform: scale(1.01);
-}
-
-.imagem-card {
-  width: 15vw;
-  height: 100%;
-  max-width: 8em;
-  max-height: 8em;
-  object-fit: cover;
-  flex-shrink: 0;
-  margin: 0.5em;
-  border-radius: 4px;
-}
-
-.info-card {
-  padding: 1em;
-  flex: 1;
+  box-shadow: var(--shadow);
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.info-card h2 {
-  color: #f66e06;
-  font-size: 1.2em;
-  margin: 0;
-}
-
-.info-card p {
-  margin: 0.3em 0;
-  font-size: 0.9em;
-  color: #444;
-}
-
-.tag-musica,
-.tag-comodidades {
-  font-size: 0.8em;
-  color: #666;
-}
-
-.botao-card {
-  align-self: flex-start;
-  margin: 0.5em;
-  padding: 0.4em 1em;
-  background-color: #f66e06;
-  color: white;
-  border: none;
-  border-radius: 0.5em;
-  font-size: 0.85em;
+  align-items: flex-end;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  font-family: 'Fredoka', sans-serif;
-  transition: background-color 0.3s ease;
 }
 
-.botao-vermais:hover {
-  background-color: #f8a60d;
-}
-
-@media (max-width:1350px){
-  .lista-estabelecimentos {
-    width: 50vw;
+/* Respeita preferência de movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+  .card-banner,
+  .favorite-btn,
+  .btn-pill,
+  .feedback-toast {
+    transition: none !important;
+    animation: none !important;
   }
 }
 
-@media (max-width:762px){
+/* Hover: levanta o card */
+.card-banner:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 32px 80px rgba(11, 15, 20, 0.16);
+}
 
-  .lista-estabelecimentos {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Gradiente para legibilidade do texto */
+.card-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.08) 0%,
+    rgba(0, 0, 0, 0.45) 60%,
+    rgba(0, 0, 0, 0.68) 100%
+  );
+  pointer-events: none;
+}
 
+/* ============================================
+   BOTÃO DE FAVORITAR (TOP-RIGHT)
+   ============================================ */
+.favorite-btn {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  z-index: 6;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.favorite-btn:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.favorite-btn:active {
+  transform: scale(0.95);
+}
+
+/* Estado quando favoritado */
+.favorite-btn.is-favorite {
+  background: rgba(255, 71, 87, 0.25);
+  border-color: rgba(255, 71, 87, 0.4);
+}
+
+/* ============================================
+   CONTEÚDO DO CARD
+   ============================================ */
+.card-content {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: clamp(16px, 2.5vw, 24px);
+  gap: 1.25rem;
+  margin-top: 5vh;
+  box-sizing: border-box;
+}
+
+/* ============================================
+   TEXTO DO CARD
+   ============================================ */
+.card-text {
+  color: #fff;
+  max-width: 65%;
+  min-width: 0;
+}
+
+.card-title {
+  margin: 0 0 8px 0;
+  font-size: clamp(1.15rem, 2.8vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  line-height: 1.2;
+}
+
+.card-sub {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: clamp(0.88rem, 1.7vw, 1rem);
+  opacity: 0.95;
+  line-height: 1.4;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Tag de estilo musical */
+.card-tag {
+  margin-top: 10px;
+  font-size: clamp(0.82rem, 1.3vw, 0.95rem);
+  color: rgba(255, 255, 255, 0.97);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 4px 12px;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ============================================
+   AÇÕES DO CARD (BOTÕES)
+   ============================================ */
+.card-actions {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.btn-pill {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: #fff;
+  border: none;
+  padding: 0.65rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(246, 110, 6, 0.2);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+}
+
+.btn-pill:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 45px rgba(246, 110, 6, 0.25);
+}
+
+.btn-pill:active {
+  transform: translateY(-2px);
+}
+
+/* Botão ghost (transparente) */
+.btn-pill.ghost {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.btn-pill.ghost:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Estado favoritado no botão ghost */
+.btn-pill.ghost.is-favorite {
+  background: rgba(255, 71, 87, 0.2);
+  border-color: rgba(255, 71, 87, 0.3);
+}
+
+/* ============================================
+   RESPONSIVIDADE - TABLET E INTERMEDIÁRIO
+   ============================================ */
+@media (max-width: 1279px) and (min-width: 621px) {
+  .card-banner {
+    aspect-ratio: 16 / 5.5;
   }
 
-  .main_estabelecimentos{
-    display: flex;
-    justify-content: center;
-    align-items:stretch;
+  .card-content {
+    padding: clamp(14px, 2vw, 20px);
+    gap: 1rem;
+  }
 
+  .card-text {
+    max-width: 58%;
+  }
+
+  .card-actions {
+    flex-wrap: wrap;
+    max-width: 42%;
+  }
+}
+
+/* ============================================
+   RESPONSIVIDADE - MOBILE
+   ============================================ */
+@media (max-width: 620px) {
+  .card-banner {
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+  }
+
+  .card-content {
+    padding: 14px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .card-text {
+    max-width: 100%;
+  }
+
+  .card-title {
+    font-size: clamp(1rem, 3.5vw, 1.2rem);
+  }
+
+  .card-sub {
+    font-size: 0.9rem;
+  }
+
+  .card-actions {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 0.6rem;
+  }
+
+  .btn-pill {
+    padding: 0.55rem 0.9rem;
+    font-size: 0.88rem;
+  }
+
+  .favorite-btn {
+    right: 12px;
+    top: 12px;
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* ============================================
+   RESPONSIVIDADE - SMARTPHONES PEQUENOS
+   ============================================ */
+@media (max-width: 420px) {
+  .card-content {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .card-title {
+    font-size: 1.05rem;
+  }
+
+  .btn-pill {
+    padding: 0.48rem 0.75rem;
+    font-size: 0.82rem;
+  }
+}
+
+/* ============================================
+   MENSAGEM DE LISTA VAZIA
+   ============================================ */
+.mensagem-vazia {
+  color: #666;
+  padding: 3rem 2rem;
+  font-size: 1.1rem;
+  text-align: center;
+  background: white;
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow);
+  grid-column: 1 / -1;
+  line-height: 1.6;
+}
+
+/* ============================================
+   TOAST DE FEEDBACK
+   ============================================ */
+.feedback-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(30, 30, 30, 0.95);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 999px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  font-weight: 600;
+  font-size: 0.95rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 90%;
+  text-align: center;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ============================================
+   ACESSIBILIDADE - FOCUS STATES
+   ============================================ */
+.favorite-btn:focus-visible,
+.btn-pill:focus-visible {
+  outline: 3px solid rgba(246, 110, 6, 0.5);
+  outline-offset: 3px;
+}
+
+/* ============================================
+   FALLBACK PARA IMAGEM NÃO CARREGADA
+   ============================================ */
+.card-banner[style*="background-image: none"],
+.card-banner[style="background-image: none;"] {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-size: cover;
+}
+
+/* ============================================
+   SUPORTE PARA DARK MODE (OPCIONAL)
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  .mensagem-vazia {
+    background: #1a1a1a;
+    color: #ccc;
   }
 }

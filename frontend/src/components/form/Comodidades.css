@@ -1,219 +1,333 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+/* Comodidades.css */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
+
 .comodidades-wrapper {
   width: 100%;
 }
 
-.comodidades-wrapper p {
-    margin-left: 0.3em;
-    font-family: 'Fredoka', sans-serif;
-    color: #F5F5F5;
-    width: 60%;
-    font-size: large;
-    margin-top: 1vh;
+.comodidades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
 }
 
-.comodidades-container{
+/* Card de Comodidade */
+.comodidade-card {
+  position: relative;
   display: flex;
-  align-items: start;
   flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1rem;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Fredoka', sans-serif;
+  text-align: center;
+  min-height: 100px;
+  width: 10vw;
+}
+
+.comodidade-card:hover {
+  border-color: var(--comodidade-color, #f66e06);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.comodidade-card.selected {
+  border-color: var(--comodidade-color, #f66e06);
+  background: linear-gradient(135deg, 
+    var(--comodidade-color, #f66e06)08, 
+    var(--comodidade-color, #f66e06)15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.comodidade-icon-wrapper {
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 1em;
-  margin-top: 2vh;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #f5f5f5, #e9e9e9);
+  border-radius: 12px;
+  color: var(--comodidade-color, #666);
+  transition: all 0.3s ease;
 }
 
-#estacionamento_coberto {
-  margin-right: 0.5em;
-  width: 1.2em;
-  height: 1.2em;
-  cursor: pointer;
+.comodidade-card.selected .comodidade-icon-wrapper {
+  background: var(--comodidade-color, #f66e06);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+.comodidade-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #333;
+  line-height: 1.3;
+}
 
-.area-texto {
+.comodidade-card.selected .comodidade-label {
+  color: var(--comodidade-color, #f66e06);
+  font-weight: 600;
+}
+
+/* Check mark */
+.comodidade-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background: var(--comodidade-color, #f66e06);
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  padding: 1vw;
-  font-family: 'Montserrat', sans-serif;
-  color: #000000;
-  font-size: 1em;
-  background: #F5F5F5;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 3vh;
+  justify-content: center;
+  color: white;
+  animation: checkAppear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@media (max-width:1660px){
-  .area-texto{
-    width: 14vw;
-    height: 8vh;
+@keyframes checkAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
   }
-}
-
-
-@media (max-width:1460px){
-  .area-texto{
-    width: 16vw;
-    height: 8vh;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
+/* Sub-opção (Estacionamento Coberto) */
+.comodidade-subopcao {
+  margin-top: 0.75rem;
+  margin-left: 1rem;
+  animation: slideDown 0.3s ease;
+}
 
-@media (max-width:1370px){
-  .area-texto{
-    width: 17vw;
-    height: 8vh;
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-
-  .comodidades-wrapper p{
-    width: 90%;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@media (max-width:1200px){
-  .area-texto{
-    width: 20vw;
-    height: 8vh;
-  }
-}
-
-
-@media (max-width:1100px){
-  .area-texto{
-    width: 17vw;
-    height: 8vh;
-  }
-}
-
-@media (max-width:1045px){
-  .comodidades-wrapper p{
-    width: 90%;
-  }
-  .area-texto{
-    width: 22vw;
-    height: 10vh;
-    font-size: 1em;
-  }
-}
-
-@media (max-width:950px){
-  .comodidades-wrapper p{
-    font-size: medium;
-  }
-  
-  .comodidades-container{
-    gap: 0.5em;
-  }
-
-  .area-texto{
-    width: 25vw;
-    height: 10vh;
-    font-size: 0.9em;
-  }
-
-} 
-
-
-@media (max-width:850px){
-  .area-texto{
-    width: 25vw;  
-    padding: 2vw;
-  }
-}
-
-@media (max-width:762px){
-  .comodidades-wrapper p{
-    font-size: 1em;
-    font-weight: 500;
-  }
-
-  .area-texto{
-    width: 88vw;  
-    padding: 2vw;
-    font-size: 1em;
-    line-height: 1.5em;
-  }
-
-  .comodidades-container{
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1em;
-    font-size: 1.3em;
-  }
-}
-
-
-@media (max-width:530px) {
-  .comodidades-wrapper p{
-    font-size: 1em;
-    font-weight: 500;
-  }
-
-  .comodidades-container{
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1em;
-    font-size: 1.1em;
-  }
-
-
-.comodidade-item label {
+.checkbox-label {
   display: flex;
   align-items: center;
-  gap: 0.6em;
-  font-size: 0.8em;
-  font-family: 'Montserrat', sans-serif;
-  color: #ffffff;
+  gap: 0.75rem;
   cursor: pointer;
-  margin-bottom: 0.5em;
-  border-radius: 10px;
+  font-size: 0.875rem;
+  color: #666;
+  font-family: 'Fredoka', sans-serif;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background 0.2s ease;
 }
 
-.comodidade-item input[type="checkbox"] {
-  accent-color: #2c2c2b;
-  width: 1.2em;
-  height: 1.2em;
-  border-radius: 10px;
-  border: 2px solid #ffffff;
-  margin-right: 0.3em;
-  cursor: pointer;
-  transition: box-shadow 0.2s;
-  padding: 1vw;
+.checkbox-label:hover {
+  background: #f5f5f5;
 }
 
-.comodidade-item input[type="checkbox"]:focus {
-  box-shadow: 0 0 0 2px #ffffff91;
-    border-radius: 10px;  
+.checkbox-label input[type="checkbox"] {
+  display: none;
+}
+
+.checkbox-custom {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-text {
+  font-weight: 500;
+  color: #333;
+}
+
+/* Descrição de Acessibilidade */
+.acessibilidade-descricao {
+  margin-top: 1.5rem;
+  animation: slideDown 0.3s ease;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-family: 'Fredoka', sans-serif;
+}
+
+.form-textarea-acess {
+  width: 100%;
+  padding: 0.875rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-family: 'Fredoka', sans-serif;
+  color: #333;
+  resize: vertical;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  background: white;
+  line-height: 1.5;
+}
+
+.form-textarea-acess:focus {
   outline: none;
+  border-color: #06b6d4;
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
 }
 
-.comodidade-subitem label {
-  font-size: 0.em;
-  color: #ffffff;
-  margin-left: 0.5em;
+.form-textarea-acess::placeholder {
+  color: #999;
 }
 
-.comodidade-subitem input[type="checkbox"] {
-  accent-color: #ffffff;
-  width: 1em;
-  height: 1em;
-  margin-right: 0.2em;
+@media (max-width: 1300px) {
+  .comodidade-card {
+    width: 12vw;
+  }
+
 }
 
-  .area-texto{
-    width:87vw;  
 
-    font-size: 1em;
+/* Responsividade */
+@media (max-width: 1024px) {
+ .comodidade-card {
+    width: 15vw;
   }
 }
 
-
-@media (max-width:400px){
-  .comodidades-container{
-    gap: 0.5em;
-    font-size: 0.8em;
+@media (max-width: 900px) {
+  .comodidades-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.875rem;
   }
-  .area-texto{
-    width: 80vw;  
-    font-size: 0.9em;
+
+  .comodidade-card {
+    padding: 1.125rem 0.875rem;
+    width: 16vw;
+  }
+
+}
+@media (max-width: 768px) {
+  .comodidades-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  .comodidade-card {
+    padding: 1rem 0.75rem;
+    min-height: 90px;
+    width: 18vw;
+  }
+
+  .comodidade-icon-wrapper {
+    width: 42px;
+    height: 42px;
+  }
+
+  .comodidade-label {
+    font-size: 0.8125rem;
+  }
+
+  .comodidade-check {
+    width: 22px;
+    height: 22px;
+  }
+
+  .comodidade-check svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 655px) {
+  .comodidades-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.625rem;
+  }
+
+  .comodidade-card {
+    padding: 1rem 0.75rem;
+    width: 25vw;
+  }
+}
+
+@media (max-width: 555px) {
+  .comodidades-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .comodidade-card {
+    padding: 1rem 0.75rem;
+    width: 35vw;
+  }
+}
+
+@media (max-width: 480px) {
+  .comodidades-grid {
+    gap: 0.625rem;
+  }
+
+  .comodidade-card {
+    padding: 0.875rem 0.625rem;
+    min-height: 85px;
+  }
+
+  .comodidade-icon-wrapper {
+    width: 38px;
+    height: 38px;
+  }
+
+  .comodidade-icon-wrapper svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .comodidade-label {
+    font-size: 0.75rem;
+  }
+
+  .checkbox-label {
+    font-size: 0.8125rem;
+    padding: 0.375rem;
+  }
+
+  .form-textarea-acess {
+    font-size: 0.875rem;
+    padding: 0.75rem;
   }
 }
