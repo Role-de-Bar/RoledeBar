@@ -1,463 +1,567 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import './CadastroEstabelecimento.css';
-import { useNavigate } from 'react-router-dom';
-import CloseIcon from '@mui/icons-material/Close';
-import Comodidades from '../../form/Comodidades';
-import SelectTipoEstabelecimento from '../../form/SelectTipoEstabelecimento';
-import SelectTipoMusica from '../../form/SelectTipoMusica';
-import SelectEstiloMusical from '../../form/SelectEstiloMusical';
-import InputTexto from '../../form/InputTexto';
-import CardEstabelecimentos from '../../estabelecimentos/CardEstabelecimento';
-
-// Estado inicial do formulário
-const FORM_INITIAL_STATE = {
-  nome: '',
-  tipoEstabelecimento: '',
-  tipoMusica: '',
-  estiloMusical: '',
-  comodidades: [],
-  cep: '',
-  rua: '',
-  numero: '',
-  complemento: '',
-  bairro: '',
-  cidade: '',
-  estado: '',
-  descricao: '',
-  foto: ''
-};
+// CadastroEstabelecimento.jsx - Versão Modal Horizontal
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  Plus,
+  X,
+  Upload,
+  MapPin,
+  Building2,
+  Music,
+  Star,
+  Image as ImageIcon,
+} from "lucide-react";
+import "./CadastroEstabelecimento.css";
+import CardEstabelecimentos from "../../estabelecimentos/CardEstabelecimento";
+import Comodidades from "../../form/Comodidades";
+import SelectTipoEstabelecimento from "../../form/SelectTipoEstabelecimento";
+import SelectTipoMusica from "../../form/SelectTipoMusica";
+import SelectEstiloMusical from "../../form/SelectEstiloMusical";
 
 function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
+  const usuario = usuarioLogado;
   const navigate = useNavigate();
-
-  // Estados
   const [meusEstabelecimentos, setMeusEstabelecimentos] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [formData, setFormData] = useState(FORM_INITIAL_STATE);
-  const [isLoadingCep, setIsLoadingCep] = useState(false);
-  const [errors, setErrors] = useState({});
 
-  // Carrega estabelecimentos do usuário
+  // Estados do formulário
+  const [nome, setNome] = useState("");
+  const [tipoEstabelecimento, setTipoEstabelecimento] = useState("");
+  const [tipoMusica, setTipoMusica] = useState("");
+  const [estiloMusical, setEstiloMusical] = useState("");
+  const [comodidades, setComodidades] = useState([]);
+  const [cep, setCep] = useState("");
+  const [rua, setRua] = useState("");
+  const [numero, setNumero] = useState("");
+  const [complemento, setComplemento] = useState("");
+  const [bairro, setBairro] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [estado, setEstado] = useState("");
+  const [descricao, setDescricao] = useState("");
+  const [foto, setFoto] = useState("");
+
   useEffect(() => {
-    if (!usuarioLogado) {
+    if (!usuario) {
       setIsLogged(false);
       localStorage.setItem("isLogged", "false");
-      navigate('/');
-      return;
+      navigate("/");
+    } else {
+      setIsLogged(true);
+      localStorage.setItem("isLogged", "true");
+      carregarMeusEstabelecimentos();
     }
+  }, [usuario, navigate, setIsLogged]);
 
-    setIsLogged(true);
-    localStorage.setItem("isLogged", "true");
+  const fileInputRef = useRef(null);
 
-    const estabelecimentos = JSON.parse(localStorage.getItem('estabelecimentos')) || [];
-    const meus = estabelecimentos.filter(estab => estab.idProprietario === usuarioLogado.id);
+  const handleFileChange = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setFoto(reader.result);
+    reader.readAsDataURL(file);
+  };
+
+  const carregarMeusEstabelecimentos = () => {
+    const estabelecimentos =
+      JSON.parse(localStorage.getItem("estabelecimentos")) || [];
+    const meus = estabelecimentos.filter(
+      (estab) => estab.idProprietario === usuario?.id
+    );
     setMeusEstabelecimentos(meus);
-  }, [usuarioLogado, navigate, setIsLogged]);
+  };
 
-  const updateField = useCallback((field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
- 
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: null }));
-    }
-  }, [errors]);
+  const voltar = () => {
+    navigate("/estabelecimentos");
+  };
 
-  // Busca CEP com debounce e loading
-  const buscarCep = useCallback(async (cepValue) => {
-    const clean = (cepValue || '').replace(/\D/g, '');
-    if (clean.length !== 8) return;
-
-    setIsLoadingCep(true);
-    try {
-      const res = await fetch(`https://viacep.com.br/ws/${clean}/json/`);
-      if (!res.ok) throw new Error('Falha ao buscar CEP');
-      
-      const data = await res.json();
-      if (data.erro) {
-        setErrors(prev => ({ ...prev, cep: 'CEP não encontrado' }));
-        return;
+  const buscarCep = async (cepDigitado) => {
+    const cepLimpo = cepDigitado.replace(/\D/g, "");
+    if (cepLimpo.length === 8) {
+      try {
+        const resposta = await fetch(
+          `https://viacep.com.br/ws/${cepLimpo}/json/`
+        );
+        const dados = await resposta.json();
+        if (!dados.erro) {
+          setRua(dados.logradouro || "");
+          setBairro(dados.bairro || "");
+          setCidade(dados.localidade || "");
+          setEstado(dados.uf || "");
+        } else {
+          alert("O CEP não foi encontrado.");
+        }
+      } catch (error) {
+        alert("Erro ao buscar o CEP.");
       }
-
-      setFormData(prev => ({
-        ...prev,
-        rua: data.logradouro || prev.rua,
-        bairro: data.bairro || prev.bairro,
-        cidade: data.localidade || prev.cidade,
-        estado: data.uf || prev.estado
-      }));
-      
-      setErrors(prev => ({ ...prev, cep: null }));
-    } catch (error) {
-      setErrors(prev => ({ ...prev, cep: 'Erro ao buscar CEP' }));
-    } finally {
-      setIsLoadingCep(false);
+    } else if (cepLimpo.length > 0) {
+      alert("O CEP deve ter 8 dígitos");
     }
-  }, []);
+  };
 
-  // Valida formulário
-  const validateForm = useCallback(() => {
-    const newErrors = {};
+  const limparFormulario = () => {
+    setNome("");
+    setTipoEstabelecimento("");
+    setTipoMusica("");
+    setEstiloMusical("");
+    setComodidades([]);
+    setCep("");
+    setRua("");
+    setNumero("");
+    setComplemento("");
+    setBairro("");
+    setCidade("");
+    setEstado("");
+    setDescricao("");
+    setFoto("");
+  };
 
-    if (!formData.nome.trim()) newErrors.nome = 'Nome é obrigatório';
-    if (!formData.tipoEstabelecimento) newErrors.tipoEstabelecimento = 'Selecione o tipo';
-    if (!formData.cep) newErrors.cep = 'CEP é obrigatório';
-    if (!formData.rua.trim()) newErrors.rua = 'Rua é obrigatória';
-    if (!formData.numero.trim()) newErrors.numero = 'Número é obrigatório';
-    if (!formData.bairro.trim()) newErrors.bairro = 'Bairro é obrigatório';
-    if (!formData.cidade.trim()) newErrors.cidade = 'Cidade é obrigatória';
-    if (!formData.estado.trim()) newErrors.estado = 'Estado é obrigatório';
-    if (!formData.descricao.trim()) newErrors.descricao = 'Descrição é obrigatória';
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }, [formData]);
-
-  // Cadastra estabelecimento
-  const cadastrarBar = useCallback((e) => {
+  const cadastrarBar = (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
-
-    const newEst = {
-      id: Date.now(),
-      nome: formData.nome.trim(),
-      tipoEstabelecimento: formData.tipoEstabelecimento,
-      tipoMusica: formData.tipoMusica,
-      estiloMusical: formData.estiloMusical,
-      comodidades: formData.comodidades,
+    const novoEstabelecimento = {
+      nome,
+      tipo: tipoEstabelecimento,
+      tipoMusica,
+      estiloMusical,
+      comodidades,
       endereco: {
-        cep: formData.cep,
-        rua: formData.rua.trim(),
-        numero: formData.numero.trim(),
-        complemento: formData.complemento.trim(),
-        bairro: formData.bairro.trim(),
-        cidade: formData.cidade.trim(),
-        estado: formData.estado.trim()
+        cep,
+        rua,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado,
       },
-      descricao: formData.descricao.trim(),
-      foto: formData.foto || '/img/default-bar.jpg',
-      idProprietario: usuarioLogado?.id || null,
-      criadoEm: new Date().toISOString()
+      descricao,
+      foto,
+      idProprietario: usuario.id,
     };
 
-    const stored = JSON.parse(localStorage.getItem('estabelecimentos')) || [];
-    stored.unshift(newEst);
-    localStorage.setItem('estabelecimentos', JSON.stringify(stored));
+    const estabelecimentosSalvos =
+      JSON.parse(localStorage.getItem("estabelecimentos")) || [];
+    estabelecimentosSalvos.push(novoEstabelecimento);
+    localStorage.setItem(
+      "estabelecimentos",
+      JSON.stringify(estabelecimentosSalvos)
+    );
 
-    setMeusEstabelecimentos(prev => [newEst, ...prev]);
+    alert("Estabelecimento cadastrado com sucesso!");
     setMostrarModal(false);
-    setFormData(FORM_INITIAL_STATE);
-    setErrors({});
-  }, [formData, usuarioLogado, validateForm]);
+    limparFormulario();
+    carregarMeusEstabelecimentos();
+  };
 
-  // Fecha modal e reseta formulário
-  const fecharModal = useCallback(() => {
+  const cancelarCadastro = () => {
     setMostrarModal(false);
-    setFormData(FORM_INITIAL_STATE);
-    setErrors({});
-  }, []);
-
-  // Preview da imagem
-  const previewSrc = formData.foto || '/img/default-bar.jpg';
-
-  // Data do último cadastro
-  const ultimoCadastro = useMemo(() => {
-    if (!meusEstabelecimentos.length) return '—';
-    const ultimo = meusEstabelecimentos[0];
-    const data = new Date(ultimo.criadoEm);
-    return `${ultimo.nome} (${data.toLocaleDateString('pt-BR')})`;
-  }, [meusEstabelecimentos]);
-
-  // Previne scroll do body quando modal está aberto
-  useEffect(() => {
-    if (mostrarModal) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [mostrarModal]);
+    limparFormulario();
+  };
 
   return (
-    <main className="cadastro_meus_estabelecimentos">
-      <div className="cabecalho_meus_estabelecimentos">
-        <div className="left">
-          <button 
-            onClick={() => navigate('/estabelecimentos')} 
-            className="voltar_estabelecimentos"
-            aria-label="Voltar para estabelecimentos"
-          >
-            ← Voltar
+    <div className="cadastro-container">
+      <div className="cadastro-wrapper">
+        {/* Header */}
+        <div className="cadastro-header">
+          <button onClick={voltar} className="btn-voltar-cadastro">
+            <ArrowLeft size={20} />
+            Voltar
           </button>
-          <h2>Meus Estabelecimentos</h2>
+          <button
+            className="btn-adicionar"
+            onClick={() => setMostrarModal(true)}
+          >
+            <Plus size={20} />
+            Adicionar Estabelecimento
+          </button>
         </div>
-        <button 
-          className="btn-add" 
-          onClick={() => setMostrarModal(true)}
-          aria-label="Adicionar novo estabelecimento"
-        >
-          ➕ Adicionar
-        </button>
-      </div>
 
-      <div className="main-grid">
-        <section className="estabelecimentos_registrados">
-          <h1>Estabelecimentos registrados</h1>
-          <p>Total: <strong>{meusEstabelecimentos.length}</strong> {meusEstabelecimentos.length === 1 ? 'estabelecimento' : 'estabelecimentos'}</p>
-          
+        {/* Lista de Estabelecimentos */}
+        <div className="estabelecimentos-section">
+          <h1>Meus Estabelecimentos</h1>
+          <p className="estabelecimentos-count">
+            Total de estabelecimentos:{" "}
+            <strong>{meusEstabelecimentos.length}</strong>
+          </p>
+
           {meusEstabelecimentos.length === 0 ? (
-            <div className="empty-state">
+            <div className="empty-estabelecimentos">
               <div className="empty-icon">🏪</div>
               <h3>Nenhum estabelecimento cadastrado</h3>
-              <p>Clique em "Adicionar" para cadastrar seu primeiro estabelecimento</p>
+              <p>Comece adicionando seu primeiro estabelecimento</p>
             </div>
           ) : (
-            <article className="article-estabelecimentos">
-              <CardEstabelecimentos 
-                estabelecimentos={meusEstabelecimentos} 
-                usuario={usuarioLogado}
-              />
-            </article>
+            <CardEstabelecimentos
+              estabelecimentos={meusEstabelecimentos}
+              usuario={usuario}
+            />
           )}
-        </section>
-
-        <aside className="side-panel" aria-hidden={!meusEstabelecimentos.length}>
-          <div className="stat">
-            <div className="label">Total cadastrado</div>
-            <div className="value">{meusEstabelecimentos.length}</div>
-          </div>
-          <div className="stat">
-            <div className="label">Último cadastro</div>
-            <div className="value-small">{ultimoCadastro}</div>
-          </div>
-          <div className="divider" />
-          <div className="tip">
-            💡 <strong>Dica:</strong> Use imagens quadradas (800x800px) para melhor exibição nos cards.
-          </div>
-        </aside>
-      </div>
-
-      {mostrarModal && (
-        <div className="modal-overlay" role="dialog" aria-modal="true" onClick={fecharModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button 
-              className="fechar-modal" 
-              aria-label="Fechar modal" 
-              onClick={fecharModal}
-            >
-              <CloseIcon />
-            </button>
-
-            <form className="form-panel" onSubmit={cadastrarBar}>
-              <h3>Novo estabelecimento</h3>
-
-              <div className="field-grid">
-                {/* Linha 1: Nome completo */}
-                <div className="field-full">
-                  <label className="form-label" htmlFor="nome">Nome *</label>
-                  <InputTexto
-                    className={`form-input ${errors.nome ? 'error' : ''}`}
-                    id="nome"
-                    value={formData.nome}
-                    onChange={(e) => updateField('nome', e.target.value)}
-                    placeholder="Ex: Bar do João"
-                    autoComplete="off"
-                  />
-                  {errors.nome && <span className="error-message">{errors.nome}</span>}
-                </div>
-
-                {/* Linha 2: Tipo, Música, Estilo */}
-                <div>
-                  <label className="form-label" htmlFor="tipo">Tipo de estabelecimento *</label>
-                  <SelectTipoEstabelecimento
-                    value={formData.tipoEstabelecimento}
-                    onChange={(val) => updateField('tipoEstabelecimento', val)}
-                  />
-                  {errors.tipoEstabelecimento && <span className="error-message">{errors.tipoEstabelecimento}</span>}
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="musica">Tipo de música</label>
-                  <SelectTipoMusica
-                    value={formData.tipoMusica}
-                    onChange={(val) => updateField('tipoMusica', val)}
-                  />
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="estilo">Estilo musical</label>
-                  <SelectEstiloMusical
-                    value={formData.estiloMusical}
-                    onChange={(val) => updateField('estiloMusical', val)}
-                  />
-                </div>
-
-                {/* Linha 3: Comodidades */}
-                <div className="field-full">
-                  <label className="form-label">Comodidades</label>
-                  <Comodidades
-                    value={formData.comodidades}
-                    onChange={(val) => updateField('comodidades', val)}
-                  />
-                </div>
-
-                {/* Linha 4: CEP, Rua, Número */}
-                <div>
-                  <label className="form-label" htmlFor="cep">CEP *</label>
-                  <div className="input-with-loading">
-                    <InputTexto
-                      className={`form-input ${errors.cep ? 'error' : ''}`}
-                      id="cep"
-                      value={formData.cep}
-                      onChange={(e) => updateField('cep', e.target.value)}
-                      onBlur={() => buscarCep(formData.cep)}
-                      placeholder="00000-000"
-                      maxLength="9"
-                    />
-                    {isLoadingCep && <span className="loading-spinner">⏳</span>}
-                  </div>
-                  {errors.cep && <span className="error-message">{errors.cep}</span>}
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="rua">Rua *</label>
-                  <InputTexto
-                    className={`form-input ${errors.rua ? 'error' : ''}`}
-                    id="rua"
-                    value={formData.rua}
-                    onChange={(e) => updateField('rua', e.target.value)}
-                  />
-                  {errors.rua && <span className="error-message">{errors.rua}</span>}
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="numero">Número *</label>
-                  <InputTexto
-                    className={`form-input ${errors.numero ? 'error' : ''}`}
-                    id="numero"
-                    value={formData.numero}
-                    onChange={(e) => updateField('numero', e.target.value)}
-                  />
-                  {errors.numero && <span className="error-message">{errors.numero}</span>}
-                </div>
-
-                {/* Linha 5: Complemento, Bairro, Cidade */}
-                <div>
-                  <label className="form-label" htmlFor="complemento">Complemento</label>
-                  <InputTexto
-                    className="form-input"
-                    id="complemento"
-                    value={formData.complemento}
-                    onChange={(e) => updateField('complemento', e.target.value)}
-                    placeholder="Apto, sala, etc"
-                  />
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="bairro">Bairro *</label>
-                  <InputTexto
-                    className={`form-input ${errors.bairro ? 'error' : ''}`}
-                    id="bairro"
-                    value={formData.bairro}
-                    onChange={(e) => updateField('bairro', e.target.value)}
-                  />
-                  {errors.bairro && <span className="error-message">{errors.bairro}</span>}
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="cidade">Cidade *</label>
-                  <InputTexto
-                    className={`form-input ${errors.cidade ? 'error' : ''}`}
-                    id="cidade"
-                    value={formData.cidade}
-                    onChange={(e) => updateField('cidade', e.target.value)}
-                  />
-                  {errors.cidade && <span className="error-message">{errors.cidade}</span>}
-                </div>
-
-                {/* Linha 6: Estado e URL da imagem */}
-                <div>
-                  <label className="form-label" htmlFor="estado">Estado *</label>
-                  <InputTexto
-                    className={`form-input ${errors.estado ? 'error' : ''}`}
-                    id="estado"
-                    value={formData.estado}
-                    onChange={(e) => updateField('estado', e.target.value)}
-                    placeholder="RS"
-                    maxLength="2"
-                  />
-                  {errors.estado && <span className="error-message">{errors.estado}</span>}
-                </div>
-
-                <div style={{ gridColumn: 'span 2' }}>
-                  <label className="form-label" htmlFor="foto">URL da imagem</label>
-                  <InputTexto
-                    className="form-input"
-                    id="foto"
-                    value={formData.foto}
-                    onChange={(e) => updateField('foto', e.target.value)}
-                    placeholder="https://exemplo.com/imagem.jpg"
-                  />
-                </div>
-
-                {/* Linha 7: Descrição */}
-                <div className="field-full">
-                  <label className="form-label" htmlFor="descricao">Descrição *</label>
-                  <textarea
-                    className={`form-input ${errors.descricao ? 'error' : ''}`}
-                    id="descricao"
-                    value={formData.descricao}
-                    onChange={(e) => updateField('descricao', e.target.value)}
-                    placeholder="Descreva seu estabelecimento..."
-                    rows="3"
-                  />
-                  {errors.descricao && <span className="error-message">{errors.descricao}</span>}
-                </div>
-              </div>
-
-              <div className="modal-actions">
-                <button type="button" className="btn-ghost" onClick={fecharModal}>
-                  Cancelar
-                </button>
-                <button type="submit" className="btn-primary">
-                  Cadastrar estabelecimento
-                </button>
-              </div>
-            </form>
-
-            <aside className="preview-panel">
-              <div className="preview-label">Preview do card</div>
-              <img 
-                src={previewSrc} 
-                alt="Preview do estabelecimento" 
-                className="preview-image"
-                onError={(e) => e.target.src = '/img/default-bar.jpg'}
-              />
-              <div className="preview-title">{formData.nome || 'Nome do estabelecimento'}</div>
-              <div className="preview-meta">
-                {formData.tipoEstabelecimento || 'Tipo'} 
-                {formData.tipoMusica && ` • ${formData.tipoMusica}`}
-              </div>
-              <div className="divider" />
-              <div className="preview-section">
-                <div className="preview-label-small">Descrição:</div>
-                <div className="preview-desc">
-                  {formData.descricao 
-                    ? (formData.descricao.length > 140 
-                        ? formData.descricao.slice(0, 140) + '...' 
-                        : formData.descricao)
-                    : 'A descrição aparecerá aqui...'}
-                </div>
-              </div>
-            </aside>
-          </div>
         </div>
-      )}
-    </main>
+
+        {/* Modal de Cadastro - Layout Horizontal */}
+        {mostrarModal && (
+          <div
+            className="modal-overlay"
+            onClick={(e) => {
+              if (e.target.className === "modal-overlay") {
+                cancelarCadastro();
+              }
+            }}
+          >
+            <div className="modal-content">
+              {/* Sidebar com Preview */}
+              <div className="modal-sidebar">
+                <div className="sidebar-content">
+                  <div className="sidebar-header">
+                    <h2>Preview</h2>
+                    <p>Veja como ficará seu estabelecimento</p>
+                  </div>
+
+                  <div className="preview-card">
+                    <h3>Pré-visualização</h3>
+                    
+                    {/* Imagem Preview */}
+                    <div className="preview-image-container">
+                      {foto ? (
+                        <>
+                          <img
+                            src={foto}
+                            alt="Preview"
+                            className="preview-image"
+                          />
+                          <button
+                            type="button"
+                            className="btn-remove-image"
+                            onClick={() => setFoto("")}
+                            title="Remover imagem"
+                          >
+                            <X size={16} />
+                          </button>
+                        </>
+                      ) : (
+                        <div className="preview-image-placeholder">
+                          <ImageIcon size={40} />
+                          <span style={{ fontSize: '0.75rem' }}>Sem imagem</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Informações do Preview */}
+                    <div className="preview-info">
+                      <div className="preview-item">
+                        <Building2 size={16} />
+                        <div>
+                          <strong>{nome || "Nome do estabelecimento"}</strong>
+                          {tipoEstabelecimento && (
+                            <div style={{ fontSize: '0.75rem', color: '#999' }}>
+                              {tipoEstabelecimento}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {(cidade || estado) && (
+                        <div className="preview-item">
+                          <MapPin size={16} />
+                          <span>
+                            {cidade && estado
+                              ? `${cidade}, ${estado}`
+                              : cidade || estado || "Localização"}
+                          </span>
+                        </div>
+                      )}
+
+                      {estiloMusical && (
+                        <div className="preview-item">
+                          <Music size={16} />
+                          <span>{estiloMusical}</span>
+                        </div>
+                      )}
+
+                      {comodidades.length > 0 && (
+                        <div className="preview-item">
+                          <Star size={16} />
+                          <span>{comodidades.length} comodidades</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Seção do Formulário */}
+              <div className="modal-form-section">
+                {/* Header do Modal */}
+                <div className="modal-header">
+                  <h2>Cadastro de Estabelecimento</h2>
+                  <button
+                    type="button"
+                    className="btn-fechar-modal"
+                    onClick={cancelarCadastro}
+                    title="Fechar"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+
+                {/* Formulário */}
+                <form className="form-cadastro" onSubmit={cadastrarBar}>
+                  {/* Informações Básicas */}
+                  <div className="form-section">
+                    <h3 className="form-section-title">
+                      <Building2 size={18} />
+                      Informações Básicas
+                    </h3>
+                    <div className="form-grid">
+                      <div className="form-group">
+                        <label className="form-label">
+                          Nome do Estabelecimento{" "}
+                          <span className="required">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={nome}
+                          onChange={(e) => setNome(e.target.value)}
+                          placeholder="Digite o nome do bar"
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label">
+                          Tipo de Estabelecimento{" "}
+                          <span className="required">*</span>
+                        </label>
+                        <SelectTipoEstabelecimento
+                          value={tipoEstabelecimento}
+                          onChange={setTipoEstabelecimento}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Música */}
+                  <div className="form-section">
+                    <h3 className="form-section-title">
+                      <Music size={18} />
+                      Música e Entretenimento
+                    </h3>
+                    <div className="form-grid">
+                      <div className="form-group">
+                        <label className="form-label">Tipo de Música</label>
+                        <SelectTipoMusica
+                          value={tipoMusica}
+                          onChange={setTipoMusica}
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label">
+                          Estilo Musical <span className="required">*</span>
+                        </label>
+                        <SelectEstiloMusical
+                          value={estiloMusical}
+                          onChange={setEstiloMusical}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Comodidades */}
+                  <div className="form-section">
+                    <h3 className="form-section-title">
+                      <Star size={18} />
+                      Comodidades
+                    </h3>
+                    <Comodidades value={comodidades} onChange={setComodidades} />
+                  </div>
+
+                  {/* Endereço */}
+                  <div className="form-section">
+                    <h3 className="form-section-title">
+                      <MapPin size={18} />
+                      Endereço
+                    </h3>
+                    <div className="form-grid">
+                      <div className="form-grid-2">
+                        <div className="form-group">
+                          <label className="form-label">
+                            CEP <span className="required">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={cep}
+                            onChange={(e) => setCep(e.target.value)}
+                            onBlur={() => buscarCep(cep)}
+                            placeholder="00000-000"
+                            maxLength="9"
+                            required
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label className="form-label">
+                            Número <span className="required">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={numero}
+                            onChange={(e) => setNumero(e.target.value)}
+                            placeholder="123"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label">
+                          Rua <span className="required">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={rua}
+                          onChange={(e) => setRua(e.target.value)}
+                          placeholder="Digite a rua"
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label">Complemento</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={complemento}
+                          onChange={(e) => setComplemento(e.target.value)}
+                          placeholder="Apto, Sala, etc"
+                        />
+                      </div>
+
+                      <div className="form-grid-2">
+                        <div className="form-group">
+                          <label className="form-label">
+                            Bairro <span className="required">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={bairro}
+                            onChange={(e) => setBairro(e.target.value)}
+                            placeholder="Digite o bairro"
+                            required
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label className="form-label">
+                            Cidade <span className="required">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={cidade}
+                            onChange={(e) => setCidade(e.target.value)}
+                            placeholder="Digite a cidade"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label">
+                          Estado <span className="required">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={estado}
+                          onChange={(e) => setEstado(e.target.value)}
+                          placeholder="UF"
+                          maxLength="2"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Descrição */}
+                  <div className="form-section">
+                    <div className="form-group">
+                      <label className="form-label">
+                        Descrição <span className="required">*</span>
+                      </label>
+                      <textarea
+                        className="form-textarea"
+                        value={descricao}
+                        onChange={(e) => setDescricao(e.target.value)}
+                        placeholder="Descreva seu estabelecimento..."
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Upload de Imagem */}
+                  <div className="form-section">
+                    <div className="form-group">
+                      <label className="form-label">
+                        Foto do Estabelecimento{" "}
+                        <span className="required">*</span>
+                      </label>
+                      <div className="upload-area">
+                        <Upload className="upload-icon" size={48} />
+                        <p className="upload-text">
+                          Arraste e solte a imagem aqui ou
+                        </p>
+                        <button
+                          type="button"
+                          className="btn-browse"
+                          onClick={() =>
+                            fileInputRef.current && fileInputRef.current.click()
+                          }
+                        >
+                          Buscar Arquivo
+                        </button>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          ref={fileInputRef}
+                          style={{ display: "none" }}
+                          onChange={handleFileChange}
+                        />
+                        <p className="upload-hint">
+                          Formato: JPG, PNG - Até 5MB
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Botões de Ação */}
+                  <div className="form-actions">
+                    <button
+                      type="button"
+                      className="btn-cancelar"
+                      onClick={cancelarCadastro}
+                    >
+                      Cancelar
+                    </button>
+                    <button type="submit" className="btn-submit">
+                      Cadastrar Estabelecimento
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

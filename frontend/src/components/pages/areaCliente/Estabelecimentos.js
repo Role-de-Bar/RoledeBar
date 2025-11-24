@@ -6,11 +6,13 @@ import Comodidades from '../../form/Comodidades';
 import SelectEstiloMusical from '../../form/SelectEstiloMusical';
 import SelectTipoEstabelecimento from '../../form/SelectTipoEstabelecimento';
 import CardEstabelecimentos from '../../estabelecimentos/CardEstabelecimento';
+import Cardapio from '../../form/Cardapio';
 import HeaderEstabelecimento from '../../estabelecimentos/headerEstabelecimento';
 import LabelTexto from '../../form/LabelTexto';
 import SelectInternoBairros from '../../form/SelectInternoBairros';
 import SelectTipoMusica from '../../form/SelectTipoMusica';
 import { AnimatePresence, motion } from "framer-motion";
+import ComodidadesFilter from '../../form/ComodidadesFiler';
 
 function Estabelecimentos({ setIsLogged, usuarioLogado }) {
   const navigate = useNavigate();
@@ -86,7 +88,7 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
               <SelectEstiloMusical value={estiloSelecionado} onChange={setEstiloSelecionado} className="filtro-input" />
               <LabelTexto htmlFor="bairro" className="filtro-label" textoLabel="Bairro:" />
               <SelectInternoBairros value={bairroSelecionado} onChange={setBairroSelecionado} className="filtro-input" />
-              <Comodidades value={comodidadesSelecionadas} onChange={setComodidadesSelecionadas} />
+              <ComodidadesFilter value={comodidadesSelecionadas} onChange={setComodidadesSelecionadas} />
               <div className="botoes-filtros">
                 <button className="btn-aplicar" onClick={aplicarFiltros}>Aplicar filtros</button>
                 <button className="btn-limpeza" onClick={limparFiltros}>Limpar filtros</button>
