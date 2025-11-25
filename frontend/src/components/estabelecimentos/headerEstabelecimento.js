@@ -7,12 +7,23 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
   const [menuMobileOpen, setMenuMobileOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [usuarioLogado, setUsuarioLogado] = useState(null);
+  const [tipoUsuario, setTipoUsuario] = useState(null);
   const navigate = useNavigate();
   useEffect(() => {
-    // Recupera dados do usuário do localStorage
     const userData = localStorage.getItem('usuarioLogado');
     if (userData) {
-      setUsuarioLogado(JSON.parse(userData));
+      const parsed = JSON.parse(userData);
+      setUsuarioLogado(parsed);
+      // O backend retorna 'tipoUsuario' (não 'tipo')
+      const tipo = parsed.tipoUsuario;
+      // Capitaliza a primeira letra: "consumidor" -> "Consumidor", "proprietario" -> "Proprietario"
+      const tipoCapitalizado = tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : 'Consumidor';
+      setTipoUsuario(tipoCapitalizado);
+      
+      // Debug logs
+      console.log('Dados do usuário:', parsed);
+      console.log('Tipo recebido:', tipo);
+      console.log('Tipo capitalizado:', tipoCapitalizado);
     }
   }, []);
   
@@ -27,7 +38,9 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
     // Limpa dados do login
     localStorage.removeItem('token');
     localStorage.removeItem('usuarioLogado');
+    localStorage.setItem('isLogged', 'false');
     setUsuarioLogado(null);
+    setTipoUsuario(null);
     setIsModalOpen(false);
     navigate("/");
   };
@@ -59,7 +72,7 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
           <button className="icon-btn">
             <Search size={20} />
           </button>
-        </div>
+        </div>                                                                                                              
 
         {/* Desktop icons */}
         <div className="right desktop-icons">
@@ -68,26 +81,27 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
             {usuarioLogado && <span className="user-name">{usuarioLogado.nome}</span>}
           </button>
     
-          {usuarioLogado && (
+          {usuarioLogado &&(
             <button className="icon-btn" onClick={goToFavoritos}>
               <Heart size={24} />
             </button>
           )}
           
-          {usuarioLogado ? (
+          {usuarioLogado ?  (
             <button className="icon-btn" onClick={returnHome}>
               <LogOut size={24} />
-            </button>
+            </button>                                                              
           ) : (
             <button className="icon-btn" onClick={() => window.location.href = "/"}>
               <LogOut size={24} />
             </button>
           )}
-            {usuarioLogado &&(
-                <button className="icon-btn" onClick={() =>goEstabelecimentos()}>
-                      <LayoutGrid size={24} />
-                </button>
-            )}
+          
+          {usuarioLogado && tipoUsuario === 'Proprietario' && (
+            <button className="icon-btn" onClick={() => goEstabelecimentos()}>
+              <LayoutGrid size={24} />
+            </button>
+          )}
         </div>
 
         {/* Mobile menu */}
@@ -109,7 +123,7 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
             <span>{usuarioLogado ? usuarioLogado.nome : 'Login'}</span>
           </button>
           
-          {usuarioLogado && (
+          {usuarioLogado && tipoUsuario === 'Consumidor' && (
             <button className="icon-btn" onClick={goToFavoritos}>
               <Heart size={24} />
               <span>Favoritos</span>
@@ -120,12 +134,13 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
             <LogOut size={24} />
             <span>{usuarioLogado ? 'Sair' : 'Voltar'}</span>
           </button>
-            {usuarioLogado &&(
-                <button className="icon-btn" onClick={() =>goEstabelecimentos()}>
-                      <LayoutGrid size={24} />
-                      <span>Estabelecimentos</span>
-                </button>
-            )}
+          
+          {usuarioLogado && tipoUsuario === 'Proprietario' && (
+            <button className="icon-btn" onClick={() => goEstabelecimentos()}>
+              <LayoutGrid size={24} />
+              <span>Meus Estabelecimentos</span>
+            </button>
+          )}
         </div>
       )}
     </div>

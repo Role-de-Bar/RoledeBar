@@ -15,7 +15,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import ComodidadesFilter from '../../form/ComodidadesFiler';
 
 function Estabelecimentos({ setIsLogged, usuarioLogado }) { 
-  const usuario = usuarioLogado;
+  const isLoggedIn = usuarioLogado && Object.keys(usuarioLogado).length > 0;
+  
 
   const [tipoSelecionado, setTipoSelecionado] = useState("");
   const [tipoMusicaSelecionado, setTipoMusicaSelecionado] = useState("");
@@ -69,7 +70,7 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
         <AnimatePresence>
           {filtrosAbertos && (
             <motion.aside
-              className={`filtros${usuario ? ' logado' : ''}`}
+              className={`filtros${isLoggedIn ? ' logado' : ''}`}
               initial={{ opacity: 0, x: 60 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 60 }}
@@ -102,7 +103,7 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
   Nenhum estabelecimento registrado.
 </div>
           ) : (
-            <CardEstabelecimentos estabelecimentos={estabelecimentos} usuario={usuario} />
+            <CardEstabelecimentos estabelecimentos={estabelecimentos} usuario={usuarioLogado} />
           )}
         </section>
       </div>

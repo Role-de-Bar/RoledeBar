@@ -120,7 +120,7 @@
   transition: 0.3s all;
 }
 
-.filtros {
+.filtros{
   background: #F38700;
   padding: 2rem;
   width: 15.5VW;
@@ -130,11 +130,11 @@
   align-items: start;
   flex-direction: column;
   padding-bottom: 4em;
-  margin-top: 12vh;
+  margin-top: 10vh;
 }
 
-.filtros.logadp{
-  margin: 0vh;
+.filtros.logado{
+  margin-top: 0vh;
 }
 
 @media (max-width:1660px) {

@@ -13,6 +13,10 @@ function CardEstabelecimentos({
   onAtualizarFavoritos 
 }) {
   const navigate = useNavigate();
+  
+  // Verifica se usuário está realmente logado
+  const isLoggedIn = usuario && Object.keys(usuario).length > 0;
+  
   const [favoritosLocais, setFavoritosLocais] = useState(() => {
     if (!usuario) return new Set();
     const favoritos = JSON.parse(localStorage.getItem("favoritos")) || {};
@@ -107,7 +111,7 @@ function CardEstabelecimentos({
   ), [isFavoritosPage]);
 
   if (estabelecimentos.length === 0) {
-    return <section className={`lista-estabelecimentos ${usuario ? 'logado' : ''}`}>{mensagemVazia}</section>;
+    return <section className={`lista-estabelecimentos ${isLoggedIn ? 'logado' : ''}`}>{mensagemVazia}</section>;
   }
 
   return (
@@ -118,7 +122,7 @@ function CardEstabelecimentos({
         </div>
       )}
 
-      <section className={`lista-estabelecimentos ${usuario ? 'logado' : ''}`}>
+      <section className={`lista-estabelecimentos ${isLoggedIn ? 'logado' : ''}`}>
         {estabelecimentos.map((estab, index) => {
           const idEstabelecimento = estab.id || index;
           const ehFavorito = isFavorito(idEstabelecimento);
