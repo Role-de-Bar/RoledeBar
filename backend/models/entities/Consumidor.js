@@ -42,8 +42,6 @@ const Consumidor = db.sequelize.define(
   }
 );
 
-Consumidor.sync({ force: false });
-
 Consumidor.beforeCreate(async (user) => {
   user.senha = await bcrypt.hash(user.senha, 10);
 });

@@ -12,6 +12,7 @@ const Proprietario = db.sequelize.define(
     cpf: {
       type: DataTypes.STRING(100),
       allowNull: false,
+      unique: true,
     },
     email: {
       type: DataTypes.STRING(150),
@@ -22,7 +23,7 @@ const Proprietario = db.sequelize.define(
       },
     },
     senha: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
     telefone: {
@@ -37,7 +38,7 @@ const Proprietario = db.sequelize.define(
       allowNull: false,
     },
     cep: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(9),
       allowNull: false,
     },
   },
@@ -45,8 +46,6 @@ const Proprietario = db.sequelize.define(
     freezeTableName: true,
   }
 );
-
-Proprietario.sync({ force: false });
 
 Proprietario.beforeCreate(async (user) => {
   user.senha = await bcrypt.hash(user.senha, 10);

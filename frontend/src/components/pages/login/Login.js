@@ -75,7 +75,7 @@ function Login({ setIsLogged, setUsuarioLogado }) {
   const login = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8081/login", {
+      const response = await fetch("http://localhost:8081/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
