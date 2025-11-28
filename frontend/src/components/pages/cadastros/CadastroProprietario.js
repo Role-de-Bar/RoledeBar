@@ -90,7 +90,7 @@ function CadastroProprietario({ setIsLogged }) {
       return;
     }
 
-    await fetch("http://localhost:8081/proprietarios/cadastro", {
+    await fetch("http://localhost:8081/cadastroProprietario", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

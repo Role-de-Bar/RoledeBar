@@ -75,7 +75,7 @@ function Login({ setIsLogged, setUsuarioLogado }) {
   const login = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8081/auth/login", {
+      const response = await fetch("http://localhost:8081/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -163,9 +163,9 @@ function Login({ setIsLogged, setUsuarioLogado }) {
           </form>
           <div className="links_cadastro_recuperacao">
             <div id="recuperar_senha">
-              <a href="#" onClick={handleOpen}>
+              {/* <a href="#" onClick={handleOpen}>
                 Esqueceu sua senha ?
-              </a>
+              </a> */}
             </div>
             <div id="fazer_cadastro">
               <a href="#" onClick={handleCadOpen}>

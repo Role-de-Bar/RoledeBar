@@ -1,4 +1,4 @@
-// CadastroEstabelecimento.jsx - Versão Modal Horizontal
+// CadastroEstabelecimento.jsx - Com funcionalidade de exclusão integrada
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -11,9 +11,11 @@ import {
   Music,
   Star,
   Image as ImageIcon,
+  Trash2,
+  Edit3,
+  MoreVertical,
 } from "lucide-react";
 import "./CadastroEstabelecimento.css";
-import CardEstabelecimentos from "../../estabelecimentos/CardEstabelecimento";
 import Comodidades from "../../form/Comodidades";
 import SelectTipoEstabelecimento from "../../form/SelectTipoEstabelecimento";
 import SelectTipoMusica from "../../form/SelectTipoMusica";
@@ -24,6 +26,9 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
   const navigate = useNavigate();
   const [meusEstabelecimentos, setMeusEstabelecimentos] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [estabelecimentoEditando, setEstabelecimentoEditando] = useState(null);
+  const [menuAberto, setMenuAberto] = useState(null);
+  const [modalConfirmacao, setModalConfirmacao] = useState(null);
 
   // Estados do formulário
   const [nome, setNome] = useState("");
@@ -115,12 +120,43 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
     setEstado("");
     setDescricao("");
     setFoto("");
+    setEstabelecimentoEditando(null);
+  };
+
+  const enderecoPreview = [
+    [rua, numero].filter(Boolean).join(", "),
+    complemento,
+    bairro,
+    cidade && estado ? `${cidade}/${estado}` : cidade || estado,
+    cep ? `CEP: ${cep}` : null,
+  ]
+    .filter(Boolean)
+    .join(" - ");
+
+  const abrirModalEdicao = (estab, index) => {
+    setEstabelecimentoEditando(index);
+    setNome(estab.nome);
+    setTipoEstabelecimento(estab.tipo);
+    setTipoMusica(estab.tipoMusica);
+    setEstiloMusical(estab.estiloMusical);
+    setComodidades(estab.comodidades);
+    setCep(estab.endereco.cep);
+    setRua(estab.endereco.rua);
+    setNumero(estab.endereco.numero);
+    setComplemento(estab.endereco.complemento);
+    setBairro(estab.endereco.bairro);
+    setCidade(estab.endereco.cidade);
+    setEstado(estab.endereco.estado);
+    setDescricao(estab.descricao);
+    setFoto(estab.foto);
+    setMostrarModal(true);
+    setMenuAberto(null);
   };
 
   const cadastrarBar = (e) => {
     e.preventDefault();
 
-    const novoEstabelecimento = {
+    const estabelecimentoData = {
       nome,
       tipo: tipoEstabelecimento,
       tipoMusica,
@@ -142,13 +178,35 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
 
     const estabelecimentosSalvos =
       JSON.parse(localStorage.getItem("estabelecimentos")) || [];
-    estabelecimentosSalvos.push(novoEstabelecimento);
-    localStorage.setItem(
-      "estabelecimentos",
-      JSON.stringify(estabelecimentosSalvos)
-    );
 
-    alert("Estabelecimento cadastrado com sucesso!");
+    if (estabelecimentoEditando !== null) {
+      // Editando estabelecimento existente
+      const todosEstabelecimentos = estabelecimentosSalvos.map((estab, idx) => {
+        if (estab.idProprietario === usuario.id) {
+          const meusIndices = estabelecimentosSalvos.filter(
+            (e) => e.idProprietario === usuario.id
+          );
+          if (meusIndices.indexOf(estab) === estabelecimentoEditando) {
+            return estabelecimentoData;
+          }
+        }
+        return estab;
+      });
+      localStorage.setItem(
+        "estabelecimentos",
+        JSON.stringify(todosEstabelecimentos)
+      );
+      alert("Estabelecimento atualizado com sucesso!");
+    } else {
+      // Novo estabelecimento
+      estabelecimentosSalvos.push(estabelecimentoData);
+      localStorage.setItem(
+        "estabelecimentos",
+        JSON.stringify(estabelecimentosSalvos)
+      );
+      alert("Estabelecimento cadastrado com sucesso!");
+    }
+
     setMostrarModal(false);
     limparFormulario();
     carregarMeusEstabelecimentos();
@@ -157,6 +215,35 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
   const cancelarCadastro = () => {
     setMostrarModal(false);
     limparFormulario();
+  };
+
+  const abrirModalConfirmacao = (index) => {
+    setModalConfirmacao(index);
+    setMenuAberto(null);
+  };
+
+  const confirmarExclusao = () => {
+    if (modalConfirmacao === null) return;
+
+    const todosEstabelecimentos =
+      JSON.parse(localStorage.getItem("estabelecimentos")) || [];
+    const meusIds = todosEstabelecimentos
+      .map((estab, idx) =>
+        estab.idProprietario === usuario?.id ? idx : null
+      )
+      .filter((id) => id !== null);
+
+    const idParaRemover = meusIds[modalConfirmacao];
+    todosEstabelecimentos.splice(idParaRemover, 1);
+
+    localStorage.setItem(
+      "estabelecimentos",
+      JSON.stringify(todosEstabelecimentos)
+    );
+
+    setModalConfirmacao(null);
+    carregarMeusEstabelecimentos();
+    alert("Estabelecimento excluído com sucesso!");
   };
 
   return (
@@ -170,7 +257,10 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
           </button>
           <button
             className="btn-adicionar"
-            onClick={() => setMostrarModal(true)}
+            onClick={() => {
+              limparFormulario();
+              setMostrarModal(true);
+            }}
           >
             <Plus size={20} />
             Adicionar Estabelecimento
@@ -192,14 +282,119 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
               <p>Comece adicionando seu primeiro estabelecimento</p>
             </div>
           ) : (
-            <CardEstabelecimentos
-              estabelecimentos={meusEstabelecimentos}
-              usuario={usuario}
-            />
+            <div className="estabelecimentos-grid">
+              {meusEstabelecimentos.map((estab, index) => (
+                <div key={index} className="estabelecimento-card">
+                  <div className="card-image-wrapper">
+                    {estab.foto ? (
+                      <img
+                        src={estab.foto}
+                        alt={estab.nome}
+                        className="card-image"
+                      />
+                    ) : (
+                      <div className="card-image-placeholder">
+                        <Building2 size={48} />
+                      </div>
+                    )}
+                    <div className="card-menu">
+                      <button
+                        className="btn-menu"
+                        onClick={() =>
+                          setMenuAberto(menuAberto === index ? null : index)
+                        }
+                      >
+                        <MoreVertical size={20} />
+                      </button>
+                      {menuAberto === index && (
+                        <div className="menu-dropdown">
+                          <button
+                            className="menu-item"
+                            onClick={() => abrirModalEdicao(estab, index)}
+                          >
+                            <Edit3 size={16} />
+                            Editar
+                          </button>
+                          <button
+                            className="menu-item delete"
+                            onClick={() => abrirModalConfirmacao(index)}
+                          >
+                            <Trash2 size={16} />
+                            Excluir
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="card-body">
+                    <h3 className="card-title">{estab.nome}</h3>
+                    <p className="card-type">{estab.tipo}</p>
+
+                    {estab.estiloMusical && (
+                      <div className="card-detail">
+                        <Music size={14} />
+                        <span>{estab.estiloMusical}</span>
+                      </div>
+                    )}
+
+                    <div className="card-detail">
+                      <MapPin size={14} />
+                      <span>
+                        {estab.endereco.cidade}/{estab.endereco.estado}
+                      </span>
+                    </div>
+
+                    {estab.comodidades?.length > 0 && (
+                      <div className="card-detail">
+                        <Star size={14} />
+                        <span>{estab.comodidades.length} comodidades</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
 
-        {/* Modal de Cadastro - Layout Horizontal */}
+        {/* Modal de Confirmação de Exclusão */}
+        {modalConfirmacao !== null && (
+          <div
+            className="modal-overlay"
+            onClick={(e) => {
+              if (e.target.className === "modal-overlay") {
+                setModalConfirmacao(null);
+              }
+            }}
+          >
+            <div className="modal-confirmacao">
+              <div className="modal-confirmacao-header">
+                <Trash2 size={24} className="icon-danger" />
+                <h2>Confirmar Exclusão</h2>
+              </div>
+              <p>
+                Tem certeza que deseja excluir o estabelecimento{" "}
+                <strong>{meusEstabelecimentos[modalConfirmacao]?.nome}</strong>
+                ?
+              </p>
+              <p className="text-warning">Esta ação não pode ser desfeita.</p>
+              <div className="modal-confirmacao-actions">
+                <button
+                  className="btn-cancelar"
+                  onClick={() => setModalConfirmacao(null)}
+                >
+                  Cancelar
+                </button>
+                <button className="btn-confirmar-delete" onClick={confirmarExclusao}>
+                  Excluir
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de Cadastro/Edição */}
         {mostrarModal && (
           <div
             className="modal-overlay"
@@ -220,7 +415,7 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
 
                   <div className="preview-card">
                     <h3>Pré-visualização</h3>
-                    
+
                     {/* Imagem Preview */}
                     <div className="preview-image-container">
                       {foto ? (
@@ -242,7 +437,9 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                       ) : (
                         <div className="preview-image-placeholder">
                           <ImageIcon size={40} />
-                          <span style={{ fontSize: '0.75rem' }}>Sem imagem</span>
+                          <span style={{ fontSize: "0.75rem" }}>
+                            Sem imagem
+                          </span>
                         </div>
                       )}
                     </div>
@@ -254,21 +451,25 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                         <div>
                           <strong>{nome || "Nome do estabelecimento"}</strong>
                           {tipoEstabelecimento && (
-                            <div style={{ fontSize: '0.75rem', color: '#999' }}>
+                            <div
+                              style={{ fontSize: "0.75rem", color: "#999" }}
+                            >
                               {tipoEstabelecimento}
                             </div>
                           )}
                         </div>
                       </div>
 
-                      {(cidade || estado) && (
+                      {(rua ||
+                        numero ||
+                        complemento ||
+                        bairro ||
+                        cidade ||
+                        estado ||
+                        cep) && (
                         <div className="preview-item">
                           <MapPin size={16} />
-                          <span>
-                            {cidade && estado
-                              ? `${cidade}, ${estado}`
-                              : cidade || estado || "Localização"}
-                          </span>
+                          <span>{enderecoPreview}</span>
                         </div>
                       )}
 
@@ -294,7 +495,11 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
               <div className="modal-form-section">
                 {/* Header do Modal */}
                 <div className="modal-header">
-                  <h2>Cadastro de Estabelecimento</h2>
+                  <h2>
+                    {estabelecimentoEditando !== null
+                      ? "Editar Estabelecimento"
+                      : "Cadastro de Estabelecimento"}
+                  </h2>
                   <button
                     type="button"
                     className="btn-fechar-modal"
@@ -377,7 +582,10 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                       <Star size={18} />
                       Comodidades
                     </h3>
-                    <Comodidades value={comodidades} onChange={setComodidades} />
+                    <Comodidades
+                      value={comodidades}
+                      onChange={setComodidades}
+                    />
                   </div>
 
                   {/* Endereço */}
@@ -523,7 +731,8 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                           type="button"
                           className="btn-browse"
                           onClick={() =>
-                            fileInputRef.current && fileInputRef.current.click()
+                            fileInputRef.current &&
+                            fileInputRef.current.click()
                           }
                         >
                           Buscar Arquivo
@@ -552,7 +761,9 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                       Cancelar
                     </button>
                     <button type="submit" className="btn-submit">
-                      Cadastrar Estabelecimento
+                      {estabelecimentoEditando !== null
+                        ? "Atualizar Estabelecimento"
+                        : "Cadastrar Estabelecimento"}
                     </button>
                   </div>
                 </form>

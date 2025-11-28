@@ -2,12 +2,8 @@
 import './InfosEstabelecimento.css';
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import InputTexto from '../../form/InputTexto';
-import LabelTexto from '../../form/LabelTexto';
-import Comodidades from '../../form/Comodidades';
-import SelectTipoEstabelecimento from '../../form/SelectTipoEstabelecimento';
-import SelectTipoMusica from '../../form/SelectTipoMusica';
-import SelectEstiloMusical from '../../form/SelectEstiloMusical';
+import GraficoFavoritos from '../../InforComponents/Graficos';
+import Avaliacoes from '../../InforComponents/Avaliacoes';
 
 function InfosEstabelecimento({ setIsLogged, usuarioLogado }) {
   const usuario = usuarioLogado;
@@ -16,7 +12,6 @@ function InfosEstabelecimento({ setIsLogged, usuarioLogado }) {
 
   const estabelecimentos = JSON.parse(localStorage.getItem("estabelecimentos")) || [];
   const estabelecimento = estabelecimentos[id];
-  const isProprietario = usuario?.tipo === "proprietario" && usuario.id === estabelecimento.idProprietario;
 
   // Estados dos campos
   const [nome, setNome] = useState(estabelecimento.nome || "");
@@ -33,6 +28,7 @@ function InfosEstabelecimento({ setIsLogged, usuarioLogado }) {
   const [cidade, setCidade] = useState(estabelecimento.cidade || "");
   const [estado, setEstado] = useState(estabelecimento.estado || "");
   const [foto, setFoto] = useState(estabelecimento.foto || "");
+  const [abaAtiva, setAbaAtiva] = useState('localizacao');
 
   useEffect(() => {
     if (!usuario) {
@@ -67,152 +63,143 @@ function InfosEstabelecimento({ setIsLogged, usuarioLogado }) {
     }
   };
 
-  const salvarAlteracoes = () => {
-    const novosEstabelecimentos = [...estabelecimentos];
-    novosEstabelecimentos[id] = {
-      ...estabelecimento,
-      nome,
-      descricao,
-      tipo,
-      tipoMusica,
-      estiloMusical,
-      comodidades,
-      cep,
-      rua,
-      numero,
-      complemento,
-      bairro,
-      cidade,
-      estado,
-      foto,
-    };
-    localStorage.setItem("estabelecimentos", JSON.stringify(novosEstabelecimentos));
-    alert("Alterações salvas com sucesso!");
-  };
+  // monta endereço formatado sem partes vazias
+  const enderecoFormatado = [
+    [rua, numero].filter(Boolean).join(', '),
+    complemento,
+    bairro,
+    (cidade && estado) ? `${cidade}/${estado}` : (cidade || estado),
+    cep ? `CEP: ${cep}` : null,
+  ].filter(Boolean).join(' - ');
 
-  const excluirEstabelecimento = () => {
-    if (window.confirm("Tem certeza que deseja excluir este estabelecimento?")) {
-      const novosEstabelecimentos = [...estabelecimentos];
-      novosEstabelecimentos.splice(id, 1);
-      localStorage.setItem("estabelecimentos", JSON.stringify(novosEstabelecimentos));
-      alert("Estabelecimento excluído.");
-      navigate("/estabelecimentos");
-    }
-  };
-
-  return (
-    <main className='main-info-estabelecimento'>
-      <div className="header-info-estabelecimento">
-        <button className="voltar" onClick={voltar}>Voltar</button>
-        <h1>{nome}</h1>
-      </div>
-
-      {!isProprietario ? (
-        <section className='listagem-dados-estabelecimento'>
-          <article className='dados-introducao'>
-            <div className="info-nome-e-foto">
-              <img src={foto} alt={`Foto do ${nome}`} className="foto-estabelecimento" />
+  // Renderizar conteúdo da aba ativa
+  const renderConteudoAba = () => {
+    switch(abaAtiva) {
+      case 'localizacao':
+        return (
+          <div className="secao-endereco-info">
+            <div className="endereco-card-info">
+              <h2>📍 Localização</h2>
+              <p className="endereco-texto-info">
+                {enderecoFormatado || 'Endereço não disponível'}
+              </p>
             </div>
-            <div className="info-geral">
-              <p><strong>Descrição: </strong>{descricao}</p>
-              <p><strong>Conceito do estabelecimento: </strong> {tipo}</p>
-              <p><strong>Tipo de música: </strong> {tipoMusica}</p>
-              <p><strong>Estilo musical: </strong> {estiloMusical}</p>
-            </div>
-          </article>
 
-          <article className='dados-bar'>
-            <div className="info-endereco">
-              <p><strong>Endereço: </strong>{rua}, {numero}, {complemento}, {bairro} - {cidade}/{estado}, {cep}.</p>
+            <div className="mapa-card-info">
               <iframe
                 title="Mapa do Estabelecimento"
                 width="100%"
+                height="100%" 
                 style={{ border: 0, borderRadius: '12px' }}
                 loading="lazy"
                 allowFullScreen
-                src={`https://maps.google.com/maps?q=${encodeURIComponent(`${rua}, ${numero}, ${cidade}, ${estado}`)}&output=embed`}
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(enderecoFormatado || nome || '')}&output=embed`}
               ></iframe>
             </div>
-            <div className="info-comodidades">
-              <p><strong>Comodidades</strong></p>
-              <ul>
-                {comodidades.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          </article>
-        </section>
-      ) : (
-        <section className='listagem-dados-estabelecimento'>
-          <article className='dados-introducao'>
-            <div className="info-foto">
-              <img src={foto} alt={`Foto do ${nome}`} className="foto-estabelecimento" />
-              <LabelTexto textoLabel="Caminho da imagem (ex: /img/bar1.jpg):" />
-              <InputTexto value={foto} onChange={(e) => setFoto(e.target.value)} required />
-            </div>
-            <div className="info-geral">
-              <LabelTexto textoLabel="Nome do Estabelecimento:" />
-              <InputTexto value={nome} onChange={e => setNome(e.target.value)} required />
-
-              <LabelTexto textoLabel="Descrição:" />
-              <textarea value={descricao} onChange={e => setDescricao(e.target.value)} required />
-
-              <LabelTexto textoLabel="Conceito do Estabelecimento:" />
-              <SelectTipoEstabelecimento value={tipo} onChange={setTipo} required />
-
-              <LabelTexto textoLabel="Tipo de Música:" />
-              <SelectTipoMusica value={tipoMusica} onChange={setTipoMusica} />
-
-              <LabelTexto textoLabel="Estilo Musical:" />
-              <SelectEstiloMusical value={estiloMusical} onChange={setEstiloMusical} required />
-            </div>
-          </article>
-
-          <article className='dados-bar'>
-            <div className="info-endereco">
-              <LabelTexto for="cep" textoLabel="CEP:" />
-              <InputTexto id="cep" value={cep} onChange={(e) => setCep(e.target.value)} onBlur={() => buscarCep(cep)} required />
-
-              <LabelTexto for="rua" textoLabel="Rua:" />
-              <InputTexto id="rua" value={rua} onChange={(e) => setRua(e.target.value)} required />
-
-              <LabelTexto for="numero" textoLabel="Número:" />
-              <InputTexto id="numero" value={numero} onChange={(e) => setNumero(e.target.value)} required />
-
-              <LabelTexto for="complemento" textoLabel="Complemento:" />
-              <InputTexto id="complemento" value={complemento} onChange={(e) => setComplemento(e.target.value)} required />
-
-              <LabelTexto for="bairro" textoLabel="Bairro:" />
-              <InputTexto id="bairro" value={bairro} onChange={(e) => setBairro(e.target.value)} required />
-
-              <LabelTexto for="cidade" textoLabel="Cidade:" />
-              <InputTexto id="cidade" value={cidade} onChange={(e) => setCidade(e.target.value)} required />
-
-              <LabelTexto for="estado" textoLabel="Estado:" />
-              <InputTexto id="estado" value={estado} onChange={(e) => setEstado(e.target.value)} required />
-
-              <iframe
-                title="Mapa do Estabelecimento"
-                width="100%"
-                style={{ border: 0, borderRadius: '12px', marginTop: '1rem' }}
-                loading="lazy"
-                allowFullScreen
-                src={`https://maps.google.com/maps?q=${encodeURIComponent(`${rua}, ${numero}, ${cidade}, ${estado}`)}&output=embed`}
-              ></iframe>
-            </div>
-
-            <div className="info-comodidades">
-              <Comodidades value={comodidades} onChange={setComodidades} />
-            </div>
-          </article>
-
-          <div className="botoes-edicao-estabelecimento">
-            <button className="excluir" onClick={excluirEstabelecimento}>Excluir estabelecimento</button>
-            <button className="salvar" onClick={salvarAlteracoes}>Salvar alterações</button>
           </div>
-        </section>
-      )}
+        );
+      case 'avaliacoes':
+        return (
+          <div className="secao-avaliacoes-info">
+            <Avaliacoes />
+          </div>
+        );
+      case 'graficos':
+        return (
+          <div className="secao-graficos-info">
+            <GraficoFavoritos />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+
+  return (
+    <main className='main-info-estabelecimento'>
+      {/* <button className="btn-voltarInfo" onClick={voltar}>
+        Voltar
+      </button> */}
+
+        <div className="container-visualizacao">
+          {/* Seção Principal - Foto e Nome */}
+          <div className="secao-hero-info">
+            <div className="galeria-fotos-info">
+              <img src={foto} alt={nome} className="foto-principal-info" />
+            </div>
+
+            <div className="info-principal-container">
+              <h1 className="nome-estabelecimento-info">{nome}</h1>
+              
+              <div className="badge-tipo-info">
+                <span className="badge-info">{tipo}</span>
+              </div>
+
+              <div className="info-rapida-grid">
+                <div className="info-item-card">
+                  <span className="label-info-text">Tipo de Música</span>
+                  <span className="valor-info-text">{tipoMusica}</span>
+                </div>
+                <div className="info-item-card">
+                  <span className="label-info-text">Estilo Musical</span>
+                  <span className="valor-info-text">{estiloMusical}</span>
+                </div>
+              </div>
+
+              <div className="descricao-box-info">
+                <h3>Descrição</h3>
+                <p>{descricao}</p>
+              </div>
+
+              {/* Comodidades em destaque */}
+              <div className="comodidades-destaque-info">
+                <h3>Comodidades</h3>
+                <div className="grid-comodidades-info">
+                  {comodidades.map((item, index) => (
+                    <div key={index} className="comodidade-tag-info">
+                      <span>✓</span> 
+                      <h5 className='comodidadeTexto-info'>{item}</h5> 
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Seção de Navegação de Abas */}
+          <div className="secao-tabs-info">
+            <div className="tabs-container-info">
+              <button 
+                className={`tab-button-info ${abaAtiva === 'localizacao' ? 'ativo-info' : ''}`}
+                onClick={() => setAbaAtiva('localizacao')}
+              >
+                <span className="tab-icone-info">📍</span>
+                <span className="tab-label-info">Localização</span>
+              </button>
+              <button 
+                className={`tab-button-info ${abaAtiva === 'avaliacoes' ? 'ativo-info' : ''}`}
+                onClick={() => setAbaAtiva('avaliacoes')}
+              >
+                <span className="tab-icone-info">⭐</span>
+                <span className="tab-label-info">Avaliações</span>
+              </button>
+              <button 
+                className={`tab-button-info ${abaAtiva === 'graficos' ? 'ativo-info' : ''}`}
+                onClick={() => setAbaAtiva('graficos')}
+              >
+                <span className="tab-icone-info">📊</span>
+                <span className="tab-label-info">Estatísticas</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Conteúdo da Aba Ativa */}
+          <div className="conteudo-abas-info">
+            {renderConteudoAba()}
+          </div>
+        </div>
+
     </main>
   );
 }

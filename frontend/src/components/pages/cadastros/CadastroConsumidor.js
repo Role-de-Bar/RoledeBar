@@ -53,7 +53,7 @@ function CadastroConsumidor({ setIsLogged }) {
       return;
     }
 
-    await fetch("http://localhost:8081/consumidores/cadastro", {
+    await fetch("http://localhost:8081/cadastroConsumidor", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

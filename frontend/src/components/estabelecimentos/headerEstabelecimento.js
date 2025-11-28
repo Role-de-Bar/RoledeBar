@@ -72,7 +72,7 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
           <button className="icon-btn">
             <Search size={20} />
           </button>
-        </div>                                                                                                              
+        </div>                                                                                                                
 
         {/* Desktop icons */}
         <div className="right desktop-icons">
