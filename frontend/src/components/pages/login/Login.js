@@ -75,7 +75,7 @@ function Login({ setIsLogged, setUsuarioLogado }) {
   const login = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8081/login", {
+      const response = await fetch("http://localhost:8081/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -97,6 +97,9 @@ function Login({ setIsLogged, setUsuarioLogado }) {
       
       setIsLogged(true);
       localStorage.setItem("isLogged", "true");
+
+      // Dispara evento customizado para notificar header e outros componentes
+      window.dispatchEvent(new Event('usuarioLogadoAtualizado'));
 
       navigate("/estabelecimentos", { state: { usuario: user } });
     } catch (error) {

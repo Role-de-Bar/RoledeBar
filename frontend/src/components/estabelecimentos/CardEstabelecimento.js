@@ -20,7 +20,7 @@ function CardEstabelecimentos({
   const [favoritosLocais, setFavoritosLocais] = useState(() => {
     if (!usuario) return new Set();
     const favoritos = JSON.parse(localStorage.getItem("favoritos")) || {};
-    return new Set(favoritos[usuario.id] || []);
+    return new Set((favoritos[usuario.id] || []).map(String));
   });
 
   const [feedbackMessage, setFeedbackMessage] = useState(null);
@@ -37,7 +37,7 @@ function CardEstabelecimentos({
   }, [usuario]);
 
   const isFavorito = useCallback((idEstabelecimento) => {
-    return favoritosLocais.has(idEstabelecimento);
+    return favoritosLocais.has(String(idEstabelecimento));
   }, [favoritosLocais]);
 
   const handleVerMais = useCallback((index) => {
@@ -61,13 +61,15 @@ function CardEstabelecimentos({
       favoritos[idUsuario] = [];
     }
 
-    const jaFavoritado = favoritos[idUsuario].includes(idEstabelecimento);
+    const listaAtuais = (favoritos[idUsuario] || []).map(String);
+    const idStr = String(idEstabelecimento);
+    const jaFavoritado = listaAtuais.includes(idStr);
 
     if (jaFavoritado) {
-      favoritos[idUsuario] = favoritos[idUsuario].filter(id => id !== idEstabelecimento);
+      favoritos[idUsuario] = (favoritos[idUsuario] || []).filter(id => String(id) !== idStr);
       setFavoritosLocais(prev => {
         const novo = new Set(prev);
-        novo.delete(idEstabelecimento);
+        novo.delete(idStr);
         return novo;
       });
       
@@ -81,8 +83,12 @@ function CardEstabelecimentos({
         onAtualizarFavoritos();
       }
     } else {
-      favoritos[idUsuario].push(idEstabelecimento);
-      setFavoritosLocais(prev => new Set(prev).add(idEstabelecimento));
+      favoritos[idUsuario].push(idStr);
+      setFavoritosLocais(prev => {
+        const novo = new Set(prev);
+        novo.add(idStr);
+        return novo;
+      });
       showFeedback(`💖 ${nomeEstabelecimento} adicionado aos favoritos!`);
     }
 

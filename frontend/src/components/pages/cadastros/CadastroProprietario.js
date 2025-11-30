@@ -90,7 +90,7 @@ function CadastroProprietario({ setIsLogged }) {
       return;
     }
 
-    await fetch("http://localhost:8081/cadastroProprietario", {
+    const response = await fetch("http://localhost:8081/proprietarios/cadastro", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -104,6 +104,11 @@ function CadastroProprietario({ setIsLogged }) {
       }),
     });
 
+    if (!response.ok) {
+      const text = await response.text().catch(() => null);
+      alert("Erro ao cadastrar: " + (text || response.statusText));
+      return;
+    }
     setNome("");
     setCpf("");
     setEmail("");

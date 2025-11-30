@@ -53,7 +53,7 @@ function CadastroConsumidor({ setIsLogged }) {
       return;
     }
 
-    await fetch("http://localhost:8081/cadastroConsumidor", {
+    const response = await fetch("http://localhost:8081/consumidores/cadastro", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -66,6 +66,11 @@ function CadastroConsumidor({ setIsLogged }) {
       }),
     });
 
+    if (!response.ok) {
+      const text = await response.text().catch(() => null);
+      alert("Erro ao cadastrar: " + (text || response.statusText));
+      return;
+    }
     setNome("");
     setEmail("");
     setTelefone("");

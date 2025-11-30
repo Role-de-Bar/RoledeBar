@@ -551,6 +551,7 @@
 /* Form Section */
 .modal-form-section {
   overflow-y: auto;
+  height: 85vh;
   display: flex;
   flex-direction: column;
 }
@@ -562,7 +563,6 @@
   padding: 1.5rem 2rem;
   border-bottom: 1px solid var(--gray-300);
   background: var(--gray-50);
-  position: sticky;
   top: 0;
   z-index: 10;
 }
@@ -734,7 +734,6 @@
   padding: 1.25rem 2rem;
   border-top: 1px solid var(--gray-300);
   background: var(--gray-50);
-  position: sticky;
   bottom: 0;
   z-index: 10;
 }

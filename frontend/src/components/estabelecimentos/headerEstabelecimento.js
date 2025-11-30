@@ -1,4 +1,4 @@
-import { Menu, User, Heart, LogOut, Search, Grip,LayoutGrid  } from "lucide-react";
+import { Menu, User, Heart, SquarePlus, LogOut, Search, Grip,LayoutGrid  } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./headerEstabelecimento.css";
@@ -9,26 +9,114 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
   const [usuarioLogado, setUsuarioLogado] = useState(null);
   const [tipoUsuario, setTipoUsuario] = useState(null);
   const navigate = useNavigate();
-  useEffect(() => {
+
+  // Função helper para atualizar estados do usuário
+  const atualizarUsuario = () => {
     const userData = localStorage.getItem('usuarioLogado');
     if (userData) {
-      const parsed = JSON.parse(userData);
-      setUsuarioLogado(parsed);
-      // O backend retorna 'tipoUsuario' (não 'tipo')
-      const tipo = parsed.tipoUsuario;
-      // Capitaliza a primeira letra: "consumidor" -> "Consumidor", "proprietario" -> "Proprietario"
-      const tipoCapitalizado = tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : 'Consumidor';
-      setTipoUsuario(tipoCapitalizado);
-      
-      // Debug logs
-      console.log('Dados do usuário:', parsed);
-      console.log('Tipo recebido:', tipo);
-      console.log('Tipo capitalizado:', tipoCapitalizado);
+      try {
+        const parsed = JSON.parse(userData);
+        setUsuarioLogado(parsed);
+        const tipo = parsed.tipoUsuario;
+        const tipoCapitalizado = tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : 'Consumidor';
+        setTipoUsuario(tipoCapitalizado);
+        console.log('Usuário atualizado:', parsed, 'Tipo:', tipoCapitalizado);
+      } catch (e) {
+        console.error('Erro ao parsear usuário do localStorage:', e);
+        setUsuarioLogado(null);
+        setTipoUsuario(null);
+      }
+    } else {
+      setUsuarioLogado(null);
+      setTipoUsuario(null);
     }
+  };
+
+  // useEffect para inicializar ao montar
+  useEffect(() => {
+    atualizarUsuario();
+  }, []);
+
+  // Função para verificar se token expirou
+  const verificarTokenExpirado = () => {
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+
+    try {
+      // Decoda o token (sem validar a assinatura, só para ler o payload)
+      const partes = token.split('.');
+      if (partes.length !== 3) return false;
+
+      const payload = JSON.parse(atob(partes[1]));
+      const agora = Math.floor(Date.now() / 1000);
+      
+      // Se exp existe e é menor que agora, token expirou
+      if (payload.exp && payload.exp < agora) {
+        console.log('Token expirou. Deslogando...');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      console.error('Erro ao verificar token:', e);
+      return false;
+    }
+  };
+
+  // Função para fazer logout forçado
+  const fazerLogoutForçado = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuarioLogado');
+    localStorage.setItem('isLogged', 'false');
+    setUsuarioLogado(null);
+    setTipoUsuario(null);
+    setMenuMobileOpen(false);
+    console.log('Usuário deslogado automaticamente (token expirou)');
+  };
+
+  // useEffect para monitorar mudanças no localStorage
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      // Se a chave 'usuarioLogado' foi alterada, atualizar
+      if (event.key === 'usuarioLogado' || event.key === null) {
+        atualizarUsuario();
+      }
+    };
+
+    // Event listener para mudanças em outras abas/janelas
+    window.addEventListener('storage', handleStorageChange);
+
+    // Event listener customizado para mudanças na mesma aba
+    const handleCustomStorageChange = () => {
+      atualizarUsuario();
+    };
+    window.addEventListener('usuarioLogadoAtualizado', handleCustomStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('usuarioLogadoAtualizado', handleCustomStorageChange);
+    };
+  }, []);
+
+  // useEffect para verificar expiração de token periodicamente
+  useEffect(() => {
+    // Verificar token expirado ao montar
+    if (verificarTokenExpirado()) {
+      fazerLogoutForçado();
+    }
+
+    // Verificar a cada 1 minuto (60000ms) se o token ainda é válido
+    const intervalo = setInterval(() => {
+      if (verificarTokenExpirado()) {
+        fazerLogoutForçado();
+        clearInterval(intervalo);
+      }
+    }, 60000); // 1 minuto
+
+    return () => clearInterval(intervalo);
   }, []);
   
 
-  const goToFavoritos = () => window.location.href = "/favoritos";
+  const goToFavoritos = () => navigate('/favoritos');
   
   const submitLogin = () => {
     goToLoginOrPerfil();
@@ -87,21 +175,24 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
             </button>
           )}
           
+          {usuarioLogado && tipoUsuario === 'Proprietario' && (
+            <button className="icon-btn" onClick={() => goEstabelecimentos()}>
+              <SquarePlus size={24} />
+            </button>
+          )}
+
+          
           {usuarioLogado ?  (
             <button className="icon-btn" onClick={returnHome}>
               <LogOut size={24} />
-            </button>                                                              
+            </button>                                                               
           ) : (
-            <button className="icon-btn" onClick={() => window.location.href = "/"}>
+            <button className="icon-btn" onClick={() => navigate('/') }>
               <LogOut size={24} />
             </button>
           )}
           
-          {usuarioLogado && tipoUsuario === 'Proprietario' && (
-            <button className="icon-btn" onClick={() => goEstabelecimentos()}>
-              <LayoutGrid size={24} />
-            </button>
-          )}
+
         </div>
 
         {/* Mobile menu */}
@@ -137,7 +228,7 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
           
           {usuarioLogado && tipoUsuario === 'Proprietario' && (
             <button className="icon-btn" onClick={() => goEstabelecimentos()}>
-              <LayoutGrid size={24} />
+              <SquarePlus size={24} />
               <span>Meus Estabelecimentos</span>
             </button>
           )}

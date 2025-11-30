@@ -102,7 +102,7 @@
 }
 
 .estabelecimento-inputTopo input {
-  width: 17.4vw;
+  width: 20.5vw;
   padding: 0.8em 2.5em 0.8em 1em;
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -113,7 +113,7 @@
 
 
 .estabelecimento-inputCentro input {
-  width: 39vw;
+  width: 42vw;
   padding: 0.8em 2.5em 0.8em 1em;
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -123,7 +123,7 @@
 }
 
 .estabelecimento-inputFooter input {
-  width: 39vw;
+  width: 42vw;
   padding: 0.8em 2.5em 0.8em 1em;
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -252,14 +252,14 @@
 
 @media (max-width:1351px){
   .estabelecimento-inputTopo input {
-    width: 16vw;
+    width: 20.5vw;
   }
 
     .estabelecimento-inputCentro input {
-    width: 37.3vw;
+    width: 42.3vw;
   }
     .estabelecimento-inputFooter input {
-       width: 37.3vw;
+       width: 42.3vw;
   }
 
 
@@ -276,14 +276,14 @@
 
 @media (max-width: 1251px) {
   .estabelecimento-inputTopo input {
-    width: 14.5vw;
+    width: 19.5vw;
   }
 
     .estabelecimento-inputCentro input {
-    width: 36.3vw;
+    width: 41.3vw;
   }
     .estabelecimento-inputFooter input {
-       width: 36.3vw;
+       width: 41.3vw;
   }
 
   .estabelecimento-form-side h2 {
@@ -372,7 +372,7 @@
   }
 
   .estabelecimento-inputTopo input {
-    width: 18vw;
+    width: 21.4vw;
   }
 
     .estabelecimento-inputCentro input {
@@ -415,7 +415,7 @@
 
 @media (max-width: 850px) {
   .estabelecimento-inputTopo input {
-    width: 26vw;
+    width: 29.8vw;
   }
 
     .estabelecimento-inputCentro input {
@@ -428,7 +428,7 @@
 
 @media (max-width: 750px) {
   .estabelecimento-inputTopo input {
-    width: 32vw;
+    width: 37vw;
   }
 
     .estabelecimento-inputCentro input {
@@ -450,7 +450,7 @@
   }
 
   .estabelecimento-inputTopo input {
-    width: 30vw;
+    width: 37vw;
   }
 
     .estabelecimento-inputCentro input {
@@ -474,6 +474,17 @@
   .estabelecimento-btn {
     width: 89vw;
   }
+
+    .estabelecimento-inputTopo input {
+    width: 41vw;
+  }
+
+    .estabelecimento-inputCentro input {
+     width: 87.5vw;
+  }
+    .estabelecimento-inputFooter input {
+       width: 87.5vw;
+  }
 }
 
 @media (max-width:450px){
@@ -496,28 +507,28 @@
       text-align: center;
       
     }
-  .estabelecimento-inputTopo input {
-    width: 28vw;
+    .estabelecimento-inputTopo input {
+    width: 43vw;
   }
 
     .estabelecimento-inputCentro input {
-     width: 75vw;
+     width: 90vw;
   }
     .estabelecimento-inputFooter input {
-       width: 75vw;
+       width: 90vw;
   }
 }
 
 @media (max-width: 360px) {
-  .estabelecimento-inputTopo input {
-    width: 25vw;
+    .estabelecimento-inputTopo input {
+    width: 43vw;
   }
 
     .estabelecimento-inputCentro input {
-     width: 70vw;
+     width: 90vw;
   }
     .estabelecimento-inputFooter input {
-       width: 70vw;
+       width: 90vw;
   }
 
     .estabelecimento-footer span{
