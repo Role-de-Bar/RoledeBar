@@ -32,6 +32,9 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
 
   // Estados do formulário
   const [nome, setNome] = useState("");
+  const [cnpj, setCnpj] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [email, setEmail] = useState("");
   const [tipoEstabelecimento, setTipoEstabelecimento] = useState("");
   const [tipoMusica, setTipoMusica] = useState("");
   const [estiloMusical, setEstiloMusical] = useState("");
@@ -68,13 +71,17 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
     reader.readAsDataURL(file);
   };
 
-  const carregarMeusEstabelecimentos = () => {
-    const estabelecimentos =
-      JSON.parse(localStorage.getItem("estabelecimentos")) || [];
-    const meus = estabelecimentos.filter(
-      (estab) => estab.idProprietario === usuario?.id
-    );
-    setMeusEstabelecimentos(meus);
+  const carregarMeusEstabelecimentos = async () => {
+    try {
+      const resposta = await fetch(
+        `http://localhost:8081/estabelecimentos/${usuario.id}`
+      );
+
+      const dados = await resposta.json();
+      setMeusEstabelecimentos(dados);
+    } catch (erro) {
+      console.error("Erro ao carregar estabelecimentos:", erro);
+    }
   };
 
   const voltar = () => {
@@ -107,6 +114,9 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
 
   const limparFormulario = () => {
     setNome("");
+    setCnpj("");
+    setTelefone("");
+    setEmail("");
     setTipoEstabelecimento("");
     setTipoMusica("");
     setEstiloMusical("");
@@ -153,60 +163,43 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
     setMenuAberto(null);
   };
 
-  const cadastrarBar = (e) => {
+  const cadastrarBar = async (e) => {
     e.preventDefault();
 
-    const estabelecimentoData = {
-      nome,
-      tipo: tipoEstabelecimento,
-      tipoMusica,
-      estiloMusical,
-      comodidades,
-      endereco: {
-        cep,
-        rua,
-        numero,
-        complemento,
-        bairro,
-        cidade,
-        estado,
-      },
-      descricao,
-      foto,
-      idProprietario: usuario.id,
-    };
+    const formData = new FormData();
+    formData.append("nome", nome);
+    formData.append("cnpj", cnpj);
+    formData.append("telefone", telefone);
+    formData.append("email", email);
+    formData.append("tipoEstabelecimento", tipoEstabelecimento);
+    formData.append("tipoMusica", tipoMusica);
+    formData.append("estiloMusical", estiloMusical);
+    formData.append("comodidades", JSON.stringify(comodidades));
+    formData.append("cep", cep);
+    formData.append("rua", rua);
+    formData.append("numero", numero);
+    formData.append("complemento", complemento);
+    formData.append("bairro", bairro);
+    formData.append("cidade", cidade);
+    formData.append("estado", estado);
+    formData.append("descricao", descricao);
+    formData.append("proprietario_id", usuario.id);
 
-    const estabelecimentosSalvos =
-      JSON.parse(localStorage.getItem("estabelecimentos")) || [];
-
-    if (estabelecimentoEditando !== null) {
-      // Editando estabelecimento existente
-      const todosEstabelecimentos = estabelecimentosSalvos.map((estab, idx) => {
-        if (estab.idProprietario === usuario.id) {
-          const meusIndices = estabelecimentosSalvos.filter(
-            (e) => e.idProprietario === usuario.id
-          );
-          if (meusIndices.indexOf(estab) === estabelecimentoEditando) {
-            return estabelecimentoData;
-          }
-        }
-        return estab;
-      });
-      localStorage.setItem(
-        "estabelecimentos",
-        JSON.stringify(todosEstabelecimentos)
-      );
-      alert("Estabelecimento atualizado com sucesso!");
-    } else {
-      // Novo estabelecimento
-      estabelecimentosSalvos.push(estabelecimentoData);
-      localStorage.setItem(
-        "estabelecimentos",
-        JSON.stringify(estabelecimentosSalvos)
-      );
-      alert("Estabelecimento cadastrado com sucesso!");
+    // Foto real (binária)
+    if (fileInputRef.current.files[0]) {
+      formData.append("foto", fileInputRef.current.files[0]);
     }
 
+    try {
+      await fetch("http://localhost:8081/estabelecimentos/cadastro", {
+        method: "POST",
+        body: formData,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+
+    alert("Estabelecimento cadastrado com sucesso!");
     setMostrarModal(false);
     limparFormulario();
     carregarMeusEstabelecimentos();
@@ -416,6 +409,7 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                   <div className="preview-card">
                     <h3>Pré-visualização</h3>
 
+
                     {/* Imagem Preview */}
                     <div className="preview-image-container">
                       {foto ? (
@@ -440,6 +434,9 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                           <span style={{ fontSize: "0.75rem" }}>
                             Sem imagem
                           </span>
+                          <span style={{ fontSize: "0.75rem" }}>
+                            Sem imagem
+                          </span>
                         </div>
                       )}
                     </div>
@@ -451,9 +448,7 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                         <div>
                           <strong>{nome || "Nome do estabelecimento"}</strong>
                           {tipoEstabelecimento && (
-                            <div
-                              style={{ fontSize: "0.75rem", color: "#999" }}
-                            >
+                            <div style={{ fontSize: "0.75rem", color: "#999" }}>
                               {tipoEstabelecimento}
                             </div>
                           )}
@@ -530,6 +525,48 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                           value={nome}
                           onChange={(e) => setNome(e.target.value)}
                           placeholder="Digite o nome do bar"
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label">
+                          CNPJ <span className="required">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={cnpj}
+                          onChange={(e) => setCnpj(e.target.value)}
+                          placeholder="Digite um CNPJ válido"
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label">
+                          Email <span className="required">*</span>
+                        </label>
+                        <input
+                          type="email"
+                          className="form-input"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="@example.com"
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label">
+                          Telefone <span className="required">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={telefone}
+                          onChange={(e) => setTelefone(e.target.value)}
+                          placeholder="DDD + número de telefone"
                           required
                         />
                       </div>

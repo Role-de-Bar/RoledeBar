@@ -2,8 +2,7 @@ const Proprietario = require('./entities/Proprietario');
 const Consumidor = require('./entities/Consumidor');
 const Estabelecimento = require('./entities/Estabelecimento');
 const Comentario = require('./entities/Comentario');
-const FavoritosConsumidor = require('./entities/FavoritosConsumidor');
-const FavoritosProprietario = require('./entities/FavoritosProprietario');
+const Favorito = require('./entities/Favorito');
 
 async function syncDatabase() {
   console.log("Iniciando sincronização de modelos...");
@@ -12,8 +11,7 @@ async function syncDatabase() {
     await Proprietario.sync({ alter: false });
     await Consumidor.sync({ alter: false });
     await Estabelecimento.sync({ alter: false });
-    await FavoritosConsumidor.sync({ alter: false });
-    await FavoritosProprietario.sync({ alter: false });
+    await Favorito.sync({ alter: false });
     await Comentario.sync({ alter: false });
 
     console.log("Todos os modelos foram sincronizados com sucesso.");

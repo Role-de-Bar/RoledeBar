@@ -12,6 +12,20 @@ const Estabelecimento = db.sequelize.define(
       type: DataTypes.STRING(150),
       allowNull: false,
     },
+    telefone: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      validate: {
+        is: /^[0-9+\-\s()]+$/i,
+      },
+    },
+    email: {
+      type: DataTypes.STRING(150),
+      allowNull: false,
+      validate: {
+        isEmail: true,
+      },
+    },
     tipoEstabelecimento: {
       type: DataTypes.STRING(100),
       allowNull: false,

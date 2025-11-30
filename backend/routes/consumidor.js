@@ -34,46 +34,49 @@ router.post("/cadastro", (req, res) => {
 //     });
 // });
 
-// app.get("/Consumidors/:id", (req, res) => {
-//   Consumidor.findAll({ where: { id: req.params.id } })
-//     .then((Consumidor) => {
-//       res.send(Consumidor);
-//     })
-//     .catch((erro) => {
-//       res.send("Erro ao buscar os dados: " + erro);
-//     });
-// });
+router.get("/:id", (req, res) => {
+  Consumidor.findAll({ where: { id: req.params.id } })
+    .then((Consumidor) => {
+      res.send(Consumidor);
+    })
+    .catch((erro) => {
+      res.send("Erro ao buscar os dados: " + erro);
+    });
+});
 
 //////////////////////////////////////////////// UPDATE ////////////////////////////////////////////////
 
-// app.patch("/Consumidors/:id", (req, res) => {
-//   const { nome, email, senha } = req.body;
-//   Consumidor.update(
-//     {
-//       nome: nome,
-//       email: email,
-//       senha: senha,
-//     },
-//     { where: { id: req.params.id } }
-//   )
-//     .then(() => {
-//       res.send("Usuário atualizado com sucesso!");
-//     })
-//     .catch((erro) => {
-//       res.send("Erro ao atualizar usuário: " + erro);
-//     });
-// });
+router.patch("/:id", (req, res) => {
+  const { nome, email, senha, telefone, data_nascimento, cep } = req.body;
+  Consumidor.update(
+    {
+      nome: nome,
+      email: email,
+      senha: senha,
+      telefone: telefone,
+      data_nascimento: data_nascimento,
+      cep: cep,
+    },
+    { where: { id: req.params.id } }
+  )
+    .then(() => {
+      res.send("Usuário atualizado com sucesso!");
+    })
+    .catch((erro) => {
+      res.send("Erro ao atualizar usuário: " + erro);
+    });
+});
 
 //////////////////////////////////////////////// DELETE ////////////////////////////////////////////////
 
-// app.delete("/Consumidors/:id", (req, res) => {
-//   Consumidor.destroy({ where: { id: req.params.id } })
-//     .then(() => {
-//       res.send("Usuário excluído com sucesso.");
-//     })
-//     .catch((erro) => {
-//       res.send("Erro ao excluir conta: " + erro);
-//     });
-// });
+router.delete("/:id", (req, res) => {
+  Consumidor.destroy({ where: { id: req.params.id } })
+    .then(() => {
+      res.send("Usuário excluído com sucesso.");
+    })
+    .catch((erro) => {
+      res.send("Erro ao excluir conta: " + erro);
+    });
+});
 
 module.exports = router;

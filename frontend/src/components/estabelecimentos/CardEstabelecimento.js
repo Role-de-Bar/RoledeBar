@@ -132,7 +132,7 @@ function CardEstabelecimentos({
         {estabelecimentos.map((estab, index) => {
           const idEstabelecimento = estab.id || index;
           const ehFavorito = isFavorito(idEstabelecimento);
-          const imagemUrl = estab.foto || '/img/default-bar.jpg';
+          const imagemUrl = `http://localhost:8081/uploads/${estab.foto}` || '/img/default-bar.jpg';
           const estiloMusical = estab.estiloMusical || estab.tipoMusica || 'Estilo variado';
 
           return (
