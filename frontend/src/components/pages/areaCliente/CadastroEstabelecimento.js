@@ -82,7 +82,7 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
     } catch (erro) {
       console.error("Erro ao carregar estabelecimentos:", erro);
     }
-  };
+  }
 
   const voltar = () => {
     navigate("/estabelecimentos");
@@ -131,6 +131,36 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
     setDescricao("");
     setFoto("");
     setEstabelecimentoEditando(null);
+  };
+
+  const enderecoPreview = [
+    [rua, numero].filter(Boolean).join(", "),
+    complemento,
+    bairro,
+    cidade && estado ? `${cidade}/${estado}` : cidade || estado,
+    cep ? `CEP: ${cep}` : null,
+  ]
+    .filter(Boolean)
+    .join(" - ");
+
+  const abrirModalEdicao = (estab, index) => {
+    setEstabelecimentoEditando(index);
+    setNome(estab.nome);
+    setTipoEstabelecimento(estab.tipo);
+    setTipoMusica(estab.tipoMusica);
+    setEstiloMusical(estab.estiloMusical);
+    setComodidades(estab.comodidades);
+    setCep(estab.endereco.cep);
+    setRua(estab.endereco.rua);
+    setNumero(estab.endereco.numero);
+    setComplemento(estab.endereco.complemento);
+    setBairro(estab.endereco.bairro);
+    setCidade(estab.endereco.cidade);
+    setEstado(estab.endereco.estado);
+    setDescricao(estab.descricao);
+    setFoto(estab.foto);
+    setMostrarModal(true);
+    setMenuAberto(null);
   };
 
   const enderecoPreview = [
@@ -448,7 +478,9 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                         <div>
                           <strong>{nome || "Nome do estabelecimento"}</strong>
                           {tipoEstabelecimento && (
-                            <div style={{ fontSize: "0.75rem", color: "#999" }}>
+                            <div
+                              style={{ fontSize: "0.75rem", color: "#999" }}
+                            >
                               {tipoEstabelecimento}
                             </div>
                           )}
