@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import GraficoFavoritos from "../../InforComponents/Graficos";
 import Avaliacoes from "../../InforComponents/Avaliacoes";
+import { X } from 'lucide-react';
 
 function InfosEstabelecimento({ setIsLogged, usuarioLogado }) {
   const usuario = usuarioLogado;
@@ -166,8 +167,13 @@ function InfosEstabelecimento({ setIsLogged, usuarioLogado }) {
 
       <div className="container-visualizacao">
         {/* Seção Principal - Foto e Nome */}
+     
+
         <div className="secao-hero-info">
           <div className="galeria-fotos-info">
+            <button className="btn-voltar-x" onClick={voltar} title="Voltar">
+              <X size={28} />
+            </button>
             <img
               src={`http://localhost:8081/uploads/${foto}`}
               alt={nome}

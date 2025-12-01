@@ -104,6 +104,18 @@
     border: 1px solid rgba(255, 107, 53, 0.08);
 }
 
+.btn-voltar-x {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--off-white-info);
+    transition: color 0.3s;
+    z-index: 10;
+}
+
 .secao-hero-info::before {
     content: '';
     position: absolute;
