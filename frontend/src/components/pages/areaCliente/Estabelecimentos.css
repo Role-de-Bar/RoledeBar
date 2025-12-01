@@ -125,7 +125,7 @@
   padding: 2rem;
   width: 18.5VW;
   min-height: 100vh;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, margin-top 0.3s ease;
   display: flex;
   align-items: start;
   flex-direction: column;
@@ -133,8 +133,8 @@
   margin-top: 10vh;
 }
 
-.filtros.logado{
-  margin-top: 0vh;
+.filtros.usuario-autenticado{
+  margin-top: 0vh !important;
 }
 
 @media (max-width:1660px) {

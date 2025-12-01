@@ -16,8 +16,10 @@ import LabelTexto from "../../form/LabelTexto";
 import FundolLogin from "../../../assets/img/loginfundo.png";
 import FundolLoginMobile from "../../../assets/img/MobileFundo.png";
 import { User, Store, Mail, LockKeyhole, LogOut } from "lucide-react";
+import { useLogin } from "../../../contexts/LoginContext";
 
 function Login({ setIsLogged, setUsuarioLogado }) {
+  const { setUsuarioLogado: setUsuarioLogadoContext } = useLogin();
   useEffect(() => {
     localStorage.setItem("isLogged", "false");
     setIsLogged(false);
@@ -94,6 +96,9 @@ function Login({ setIsLogged, setUsuarioLogado }) {
       localStorage.setItem("usuarioLogado", JSON.stringify(data.usuario));
 
       const user = data.usuario;
+      
+      // Atualiza o estado no Context
+      setUsuarioLogadoContext(user);
       
       setIsLogged(true);
       localStorage.setItem("isLogged", "true");

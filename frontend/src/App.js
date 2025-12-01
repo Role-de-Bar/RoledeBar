@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 import { useState } from 'react';
+import { LoginProvider } from './contexts/LoginContext';
 
 // Layout (importação)
 import Header from "./components/layout/Header"
@@ -64,9 +65,11 @@ function App() {
   });
 
   return (
-    <BrowserRouter>
-      <AppContent isLogged={isLogged} setIsLogged={setIsLogged} usuarioLogado={usuarioLogado} setUsuarioLogado={setUsuarioLogado} />
-    </BrowserRouter>
+    <LoginProvider>
+      <BrowserRouter>
+        <AppContent isLogged={isLogged} setIsLogged={setIsLogged} usuarioLogado={usuarioLogado} setUsuarioLogado={setUsuarioLogado} />
+      </BrowserRouter>
+    </LoginProvider>
   );
 }
 

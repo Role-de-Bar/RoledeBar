@@ -11,11 +11,12 @@ import HeaderEstabelecimento from "../../estabelecimentos/headerEstabelecimento"
 import LabelTexto from "../../form/LabelTexto";
 import SelectInternoBairros from "../../form/SelectInternoBairros";
 import SelectTipoMusica from "../../form/SelectTipoMusica";
-import { AnimatePresence, motion } from "framer-motion";
 import ComodidadesFilter from "../../form/ComodidadesFiler";
+import { useLogin } from "../../../contexts/LoginContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 function Estabelecimentos({ setIsLogged, usuarioLogado }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn } = useLogin();
   const [tipoSelecionado, setTipoSelecionado] = useState("");
   const [tipoMusicaSelecionado, setTipoMusicaSelecionado] = useState("");
   const [estiloSelecionado, setEstiloSelecionado] = useState("");
@@ -26,11 +27,7 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
   const [filtrosAbertos, setFiltrosAbertos] = useState(false);
 
   useEffect(() => {
-    const verificarLoginECarregar = async () => {
-      // Verifica se o usuário está logado
-      const logado = usuarioLogado && Object.keys(usuarioLogado).length > 0;
-      setIsLoggedIn(logado);
-
+    const carregarEstabelecimentos = async () => {
       // Carrega os estabelecimentos
       try {
         const resp = await fetch("http://localhost:8081/estabelecimentos/all");
@@ -42,8 +39,8 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
       }
     };
 
-    verificarLoginECarregar();
-  }, [usuarioLogado]);
+    carregarEstabelecimentos();
+  }, []);
 
   const aplicarFiltros = () => {
     const todos = JSON.parse(localStorage.getItem("estabelecimentos")) || [];
@@ -90,10 +87,14 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
           {filtrosAbertos && (
             <motion.aside
               className={`filtros${isLoggedIn ? " logado" : ""}`}
+              style={{
+                marginTop: isLoggedIn ? "0vh" : "10vh"
+              }}
               initial={{ opacity: 0, x: 60 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 60 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
+              layout
             >
               <button
                 className="fechar-filtro"
