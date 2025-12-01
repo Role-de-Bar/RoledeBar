@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const upload = require("../middlewares/upload");
 const Estabelecimento = require("../models/entities/Estabelecimento");
+const { Op } = require("sequelize");
 
 //////////////////////////////////////////////// CREATE ////////////////////////////////////////////////
 
@@ -81,6 +82,7 @@ router.get("/filtrar", async (req, res) => {
       estiloMusical,
       bairro,
       comodidades,
+      nome,
     } = req.query;
 
     const where = {};
@@ -89,6 +91,10 @@ router.get("/filtrar", async (req, res) => {
     if (tipoMusica) where.tipoMusica = tipoMusica;
     if (estiloMusical) where.estiloMusical = estiloMusical;
     if (bairro) where.bairro = bairro;
+
+    if (nome) {
+      where.nome = { [Op.like]: `%${nome}%` };
+    }
 
     let estabelecimentos = await Estabelecimento.findAll({ where });
 

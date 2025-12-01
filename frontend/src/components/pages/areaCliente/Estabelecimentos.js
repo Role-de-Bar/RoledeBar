@@ -23,6 +23,7 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
   const [comodidadesSelecionadas, setComodidadesSelecionadas] = useState([]);
   const [bairroSelecionado, setBairroSelecionado] = useState("");
   const [estabelecimentos, setEstabelecimentos] = useState([]);
+  const [buscaNome, setBuscaNome] = useState("");
 
   const [filtrosAbertos, setFiltrosAbertos] = useState(false);
 
@@ -42,6 +43,10 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
     carregarEstabelecimentos();
   }, []);
 
+  useEffect(() => {
+    aplicarFiltros();
+  }, [buscaNome]);
+
   const aplicarFiltros = async () => {
     try {
       const params = new URLSearchParams();
@@ -52,6 +57,7 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
         params.append("tipoMusica", tipoMusicaSelecionado);
       if (estiloSelecionado) params.append("estiloMusical", estiloSelecionado);
       if (bairroSelecionado) params.append("bairro", bairroSelecionado);
+      if (buscaNome) params.append("nome", buscaNome);
 
       comodidadesSelecionadas.forEach((c) => params.append("comodidades", c));
 
@@ -84,7 +90,10 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
 
   return (
     <main className="main_estabelecimentos">
-      <HeaderEstabelecimento onToggleFiltros={toggleFiltros} />
+      <HeaderEstabelecimento
+        onToggleFiltros={toggleFiltros}
+        onBuscarNome={(valor) => setBuscaNome(valor)}
+      />
 
       <div className="alingn-conteudo">
         <AnimatePresence>

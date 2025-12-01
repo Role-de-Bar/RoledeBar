@@ -12,11 +12,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./headerEstabelecimento.css";
 
-function HeaderEstabelecimento({ onToggleFiltros }) {
+function HeaderEstabelecimento({ onToggleFiltros, onBuscarNome }) {
   const [menuMobileOpen, setMenuMobileOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [usuarioLogado, setUsuarioLogado] = useState(null);
   const [tipoUsuario, setTipoUsuario] = useState(null);
+  const [textoBusca, setTextoBusca] = useState("");
+
   const navigate = useNavigate();
 
   // Função helper para atualizar estados do usuário
@@ -82,6 +84,14 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
     setTipoUsuario(null);
     setMenuMobileOpen(false);
     console.log("Usuário deslogado automaticamente (token expirou)");
+  };
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setTextoBusca(value);
+
+    // envia para o componente pai
+    onBuscarNome(value);
   };
 
   // useEffect para monitorar mudanças no localStorage
@@ -173,7 +183,12 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
         </div>
 
         <div className="search-bar">
-          <input type="text" placeholder="Pesquisar Bar" />
+          <input
+            type="text"
+            placeholder="Pesquisar Bar"
+            value={textoBusca}
+            onChange={handleSearchChange}
+          />
           <button className="icon-btn">
             <Search size={20} />
           </button>
