@@ -17,11 +17,8 @@ function CardEstabelecimentos({
   // Verifica se usuário está realmente logado
   const isLoggedIn = usuario && Object.keys(usuario).length > 0;
   
-  const [favoritosLocais, setFavoritosLocais] = useState(() => {
-    if (!usuario) return new Set();
-    const favoritos = JSON.parse(localStorage.getItem("favoritos")) || {};
-    return new Set((favoritos[usuario.id] || []).map(String));
-  });
+  const [favoritosLocais, setFavoritosLocais] = useState(new Set());
+
 
   const [feedbackMessage, setFeedbackMessage] = useState(null);
 
@@ -43,52 +40,75 @@ function CardEstabelecimentos({
     navigate(`/infosEstabelecimento/${index}`);
   }, [usuario, navigate, showFeedback]);
 
-  const handleToggleFavorito = useCallback((idEstabelecimento, nomeEstabelecimento) => {
+ const handleToggleFavorito = useCallback(
+  async (idEstabelecimento, nomeEstabelecimento) => {
     if (!usuario) {
       showFeedback("⚠️ Para favoritar estabelecimentos, faça login ou cadastre-se!");
       return;
     }
 
-    const favoritos = getFavoritos();
     const idUsuario = usuario.id;
+    const tipo = usuario.tipo; // "consumidor" ou "proprietario"
+    const campoUsuario =
+      tipo === "consumidor" ? "consumidor_id" : "proprietario_id";
 
-    if (!favoritos[idUsuario]) {
-      favoritos[idUsuario] = [];
-    }
-
-    const listaAtuais = (favoritos[idUsuario] || []).map(String);
     const idStr = String(idEstabelecimento);
-    const jaFavoritado = listaAtuais.includes(idStr);
+    const jaFavoritado = favoritosLocais.has(idStr);
 
-    if (jaFavoritado) {
-      favoritos[idUsuario] = (favoritos[idUsuario] || []).filter(id => String(id) !== idStr);
-      setFavoritosLocais(prev => {
-        const novo = new Set(prev);
-        novo.delete(idStr);
-        return novo;
-      });
-      
-      const mensagem = isFavoritosPage 
-        ? `💔 ${nomeEstabelecimento} removido dos favoritos`
-        : `💔 ${nomeEstabelecimento} desfavoritado`;
-      
-      showFeedback(mensagem);
+    try {
+      if (jaFavoritado) {
+        // 🔥 REMOVE DO BACKEND
+        await fetch("http://localhost:8081/favoritos/remove", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            estabelecimento_id: idEstabelecimento,
+            consumidor_id: tipo === "consumidor" ? idUsuario : null,
+            proprietario_id: tipo === "proprietario" ? idUsuario : null,
+          }),
+        });
 
-      if (isFavoritosPage && onAtualizarFavoritos) {
-        onAtualizarFavoritos();
+        // Atualiza front
+        setFavoritosLocais(prev => {
+          const novo = new Set(prev);
+          novo.delete(idStr);
+          return novo;
+        });
+
+        const msg = isFavoritosPage
+          ? `💔 ${nomeEstabelecimento} removido dos favoritos`
+          : `💔 ${nomeEstabelecimento} desfavoritado`;
+
+        showFeedback(msg);
+
+        if (isFavoritosPage && onAtualizarFavoritos) {
+          onAtualizarFavoritos();
+        }
+      } else {
+        // 💖 ADICIONA FAVORITO VIA BACKEND
+        await fetch("http://localhost:8081/favoritos/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            estabelecimento_id: idEstabelecimento,
+            consumidor_id: tipo === "consumidor" ? idUsuario : null,
+            proprietario_id: tipo === "proprietario" ? idUsuario : null,
+          }),
+        });
+
+        // Atualiza front
+        setFavoritosLocais(prev => new Set(prev).add(idStr));
+
+        showFeedback(`💖 ${nomeEstabelecimento} adicionado aos favoritos!`);
       }
-    } else {
-      favoritos[idUsuario].push(idStr);
-      setFavoritosLocais(prev => {
-        const novo = new Set(prev);
-        novo.add(idStr);
-        return novo;
-      });
-      showFeedback(`💖 ${nomeEstabelecimento} adicionado aos favoritos!`);
+    } catch (error) {
+      console.error("Erro ao atualizar favorito:", error);
+      showFeedback("❌ Erro ao atualizar favorito.");
     }
+  },
+  [usuario, favoritosLocais, isFavoritosPage, onAtualizarFavoritos, showFeedback]
+);
 
-    localStorage.setItem("favoritos", JSON.stringify(favoritos));
-  }, [usuario, getFavoritos, isFavoritosPage, onAtualizarFavoritos, showFeedback]);
 
   const formatarEndereco = useCallback((estab) => {
     const rua = estab.rua || "";

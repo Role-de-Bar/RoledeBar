@@ -28,9 +28,7 @@ router.post("/cadastro", upload.single("foto"), async (req, res) => {
     } = req.body;
 
     const parsedComodidades =
-      typeof comodidades === "string"
-        ? JSON.parse(comodidades)
-        : comodidades;
+      typeof comodidades === "string" ? JSON.parse(comodidades) : comodidades;
 
     const novo = await Estabelecimento.create({
       nome,
@@ -57,13 +55,11 @@ router.post("/cadastro", upload.single("foto"), async (req, res) => {
       message: "Estabelecimento cadastrado com sucesso!",
       estabelecimento: novo,
     });
-
   } catch (erro) {
     console.error("Erro ao cadastrar estabelecimento:", erro);
     return res.status(500).json({ error: erro.message });
   }
 });
-
 
 //////////////////////////////////////////////// READ ////////////////////////////////////////////////
 
@@ -77,6 +73,40 @@ router.get("/all", (req, res) => {
     });
 });
 
+router.get("/filtrar", async (req, res) => {
+  try {
+    const {
+      tipoEstabelecimento,
+      tipoMusica,
+      estiloMusical,
+      bairro,
+      comodidades,
+    } = req.query;
+
+    const where = {};
+
+    if (tipoEstabelecimento) where.tipoEstabelecimento = tipoEstabelecimento;
+    if (tipoMusica) where.tipoMusica = tipoMusica;
+    if (estiloMusical) where.estiloMusical = estiloMusical;
+    if (bairro) where.bairro = bairro;
+
+    let estabelecimentos = await Estabelecimento.findAll({ where });
+
+    if (comodidades) {
+      const lista = Array.isArray(comodidades) ? comodidades : [comodidades];
+
+      estabelecimentos = estabelecimentos.filter((e) => {
+        if (!e.comodidades) return false;
+        return lista.every((c) => e.comodidades.includes(c));
+      });
+    }
+
+    return res.json(estabelecimentos);
+  } catch (error) {
+    console.error("Erro ao filtrar estabelecimentos:", error);
+    return res.status(500).json([]);
+  }
+});
 
 router.get("/:id", (req, res) => {
   Estabelecimento.findAll({ where: { proprietario_id: req.params.id } })
@@ -97,6 +127,7 @@ router.get("/vermais/:id", (req, res) => {
       res.send("Erro ao buscar os dados: " + erro);
     });
 });
+
 //////////////////////////////////////////////// UPDATE ////////////////////////////////////////////////
 
 router.patch("/:id", upload.single("foto"), async (req, res) => {
@@ -161,7 +192,6 @@ router.patch("/:id", upload.single("foto"), async (req, res) => {
     return res.status(500).json({ error: erro.message });
   }
 });
-
 
 //////////////////////////////////////////////// DELETE ////////////////////////////////////////////////
 

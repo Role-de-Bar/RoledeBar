@@ -42,38 +42,42 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
     carregarEstabelecimentos();
   }, []);
 
-  const aplicarFiltros = () => {
-    const todos = JSON.parse(localStorage.getItem("estabelecimentos")) || [];
-    const filtrados = todos.filter((estab) => {
-      const tipo = tipoSelecionado ? estab.tipo === tipoSelecionado : true;
-      const tipoMusicaOk = tipoMusicaSelecionado
-        ? estab.tipoMusica === tipoMusicaSelecionado
-        : true;
-      const estilo = estiloSelecionado
-        ? estab.estiloMusical === estiloSelecionado
-        : true;
-      const comodidades =
-        comodidadesSelecionadas.length > 0
-          ? comodidadesSelecionadas.every((comod) =>
-              estab.comodidades.includes(comod)
-            )
-          : true;
-      const bairro = bairroSelecionado
-        ? estab.bairro === bairroSelecionado
-        : true;
-      return tipo && tipoMusicaOk && estilo && comodidades && bairro;
-    });
-    setEstabelecimentos(filtrados);
-    setFiltrosAbertos(false);
+  const aplicarFiltros = async () => {
+    try {
+      const params = new URLSearchParams();
+
+      if (tipoSelecionado)
+        params.append("tipoEstabelecimento", tipoSelecionado);
+      if (tipoMusicaSelecionado)
+        params.append("tipoMusica", tipoMusicaSelecionado);
+      if (estiloSelecionado) params.append("estiloMusical", estiloSelecionado);
+      if (bairroSelecionado) params.append("bairro", bairroSelecionado);
+
+      comodidadesSelecionadas.forEach((c) => params.append("comodidades", c));
+
+      const resp = await fetch(
+        `http://localhost:8081/estabelecimentos/filtrar?${params.toString()}`
+      );
+
+      const dados = await resp.json();
+
+      setEstabelecimentos(Array.isArray(dados) ? dados : []);
+      setFiltrosAbertos(false);
+    } catch (error) {
+      console.error("Erro ao aplicar filtros:", error);
+    }
   };
 
-  const limparFiltros = () => {
+  const limparFiltros = async () => {
     setTipoSelecionado("");
+    setTipoMusicaSelecionado("");
     setEstiloSelecionado("");
     setComodidadesSelecionadas([]);
     setBairroSelecionado("");
-    const todos = JSON.parse(localStorage.getItem("estabelecimentos")) || [];
-    setEstabelecimentos(todos);
+
+    const resp = await fetch("http://localhost:8081/estabelecimentos/all");
+    const dados = await resp.json();
+    setEstabelecimentos(dados);
   };
 
   const toggleFiltros = () => setFiltrosAbertos((prev) => !prev);
@@ -88,7 +92,7 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
             <motion.aside
               className={`filtros${isLoggedIn ? " logado" : ""}`}
               style={{
-                marginTop: isLoggedIn ? "0vh" : "10vh"
+                marginTop: isLoggedIn ? "0vh" : "10vh",
               }}
               initial={{ opacity: 0, x: 60 }}
               animate={{ opacity: 1, x: 0 }}
