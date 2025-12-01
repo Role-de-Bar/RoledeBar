@@ -50,6 +50,7 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
   const [foto, setFoto] = useState("");
 
   useEffect(() => {
+    console.log(usuario);
     if (!usuario) {
       setIsLogged(false);
       localStorage.setItem("isLogged", "false");
@@ -57,6 +58,7 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
     } else {
       setIsLogged(true);
       localStorage.setItem("isLogged", "true");
+      setMeusEstabelecimentos([]);
       carregarMeusEstabelecimentos();
     }
   }, [usuario, navigate, setIsLogged]);
@@ -72,17 +74,13 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
   };
 
   const carregarMeusEstabelecimentos = async () => {
-    try {
-      const resposta = await fetch(
-        `http://localhost:8081/estabelecimentos/${usuario.id}`
-      );
-
-      const dados = await resposta.json();
-      setMeusEstabelecimentos(dados);
-    } catch (erro) {
-      console.error("Erro ao carregar estabelecimentos:", erro);
-    }
-  }
+    const res = await fetch(
+      `http://localhost:8081/estabelecimentos/${usuario.id}`,
+      { cache: "no-store" }
+    );
+    const dados = await res.json();
+    setMeusEstabelecimentos(dados);
+  };
 
   const voltar = () => {
     navigate("/estabelecimentos");
@@ -146,17 +144,20 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
   const abrirModalEdicao = (estab, index) => {
     setEstabelecimentoEditando(index);
     setNome(estab.nome);
-    setTipoEstabelecimento(estab.tipo);
+    setCnpj(estab.cnpj);
+    setTelefone(estab.telefone);
+    setEmail(estab.email);
+    setTipoEstabelecimento(estab.tipoEstabelecimento || estab.tipo);
     setTipoMusica(estab.tipoMusica);
     setEstiloMusical(estab.estiloMusical);
     setComodidades(estab.comodidades);
-    setCep(estab.endereco.cep);
-    setRua(estab.endereco.rua);
-    setNumero(estab.endereco.numero);
-    setComplemento(estab.endereco.complemento);
-    setBairro(estab.endereco.bairro);
-    setCidade(estab.endereco.cidade);
-    setEstado(estab.endereco.estado);
+    setCep(estab.cep);
+    setRua(estab.rua);
+    setNumero(estab.numero);
+    setComplemento(estab.complemento);
+    setBairro(estab.bairro);
+    setCidade(estab.cidade);
+    setEstado(estab.estado);
     setDescricao(estab.descricao);
     setFoto(estab.foto);
     setMostrarModal(true);
@@ -190,16 +191,23 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
       formData.append("foto", fileInputRef.current.files[0]);
     }
 
-    try {
+    if (estabelecimentoEditando !== null) {
+      await fetch(
+        `http://localhost:8081/estabelecimentos/${meusEstabelecimentos[estabelecimentoEditando].id}`,
+        {
+          method: "PATCH",
+          body: formData,
+        }
+      );
+      alert("Estabelecimento atualizado com sucesso!");
+    } else {
       await fetch("http://localhost:8081/estabelecimentos/cadastro", {
         method: "POST",
         body: formData,
       });
-    } catch (error) {
-      console.error(error);
+      alert("Estabelecimento cadastrado com sucesso!");
     }
 
-    alert("Estabelecimento cadastrado com sucesso!");
     setMostrarModal(false);
     limparFormulario();
     carregarMeusEstabelecimentos();
@@ -215,28 +223,30 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
     setMenuAberto(null);
   };
 
-  const confirmarExclusao = () => {
+  const confirmarExclusao = async () => {
     if (modalConfirmacao === null) return;
 
-    const todosEstabelecimentos =
-      JSON.parse(localStorage.getItem("estabelecimentos")) || [];
-    const meusIds = todosEstabelecimentos
-      .map((estab, idx) =>
-        estab.idProprietario === usuario?.id ? idx : null
-      )
-      .filter((id) => id !== null);
+    const estabelecimentoParaRemover = meusEstabelecimentos[modalConfirmacao];
 
-    const idParaRemover = meusIds[modalConfirmacao];
-    todosEstabelecimentos.splice(idParaRemover, 1);
+    try {
+      await fetch(
+        `http://localhost:8081/estabelecimentos/${estabelecimentoParaRemover.id}`,
+        { method: "DELETE" }
+      );
 
-    localStorage.setItem(
-      "estabelecimentos",
-      JSON.stringify(todosEstabelecimentos)
-    );
+      setModalConfirmacao(null);
+      alert("Estabelecimento excluído com sucesso!");
 
-    setModalConfirmacao(null);
-    carregarMeusEstabelecimentos();
-    alert("Estabelecimento excluído com sucesso!");
+      const res = await fetch(
+        `http://localhost:8081/estabelecimentos/${usuario.id}`,
+        { cache: "no-store" }
+      );
+      const dados = await res.json();
+      setMeusEstabelecimentos(dados);
+    } catch (erro) {
+      console.error("Erro ao excluir estabelecimento:", erro);
+      alert("Não foi possível excluir o estabelecimento.");
+    }
   };
 
   return (
@@ -281,7 +291,7 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                   <div className="card-image-wrapper">
                     {estab.foto ? (
                       <img
-                        src={estab.foto}
+                        src={`http://localhost:8081/uploads/${estab.foto}`}
                         alt={estab.nome}
                         className="card-image"
                       />
@@ -334,7 +344,7 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                     <div className="card-detail">
                       <MapPin size={14} />
                       <span>
-                        {estab.endereco.cidade}/{estab.endereco.estado}
+                        {estab.cidade}/{estab.estado}
                       </span>
                     </div>
 
@@ -368,8 +378,7 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
               </div>
               <p>
                 Tem certeza que deseja excluir o estabelecimento{" "}
-                <strong>{meusEstabelecimentos[modalConfirmacao]?.nome}</strong>
-                ?
+                <strong>{meusEstabelecimentos[modalConfirmacao]?.nome}</strong>?
               </p>
               <p className="text-warning">Esta ação não pode ser desfeita.</p>
               <div className="modal-confirmacao-actions">
@@ -379,7 +388,10 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                 >
                   Cancelar
                 </button>
-                <button className="btn-confirmar-delete" onClick={confirmarExclusao}>
+                <button
+                  className="btn-confirmar-delete"
+                  onClick={confirmarExclusao}
+                >
                   Excluir
                 </button>
               </div>
@@ -409,13 +421,16 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                   <div className="preview-card">
                     <h3>Pré-visualização</h3>
 
-
                     {/* Imagem Preview */}
                     <div className="preview-image-container">
                       {foto ? (
                         <>
                           <img
-                            src={foto}
+                            src={
+                              foto.startsWith("data:")
+                                ? foto
+                                : `http://localhost:8081/uploads/${foto}`
+                            }
                             alt="Preview"
                             className="preview-image"
                           />
@@ -448,9 +463,7 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                         <div>
                           <strong>{nome || "Nome do estabelecimento"}</strong>
                           {tipoEstabelecimento && (
-                            <div
-                              style={{ fontSize: "0.75rem", color: "#999" }}
-                            >
+                            <div style={{ fontSize: "0.75rem", color: "#999" }}>
                               {tipoEstabelecimento}
                             </div>
                           )}
@@ -770,8 +783,7 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
                           type="button"
                           className="btn-browse"
                           onClick={() =>
-                            fileInputRef.current &&
-                            fileInputRef.current.click()
+                            fileInputRef.current && fileInputRef.current.click()
                           }
                         >
                           Buscar Arquivo

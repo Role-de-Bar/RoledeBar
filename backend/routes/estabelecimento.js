@@ -88,19 +88,80 @@ router.get("/:id", (req, res) => {
     });
 });
 
-//////////////////////////////////////////////// UPDATE ////////////////////////////////////////////////
-
-router.patch("/:id", (req, res) => {
-  Estabelecimento.update(req.body, {
-    where: { id: req.params.id },
-  })
-    .then(() => {
-      res.send("Estabelecimento atualizado com sucesso!");
+router.get("/vermais/:id", (req, res) => {
+  Estabelecimento.findOne({ where: { id: req.params.id } })
+    .then((Estabelecimento) => {
+      res.send(Estabelecimento);
     })
     .catch((erro) => {
-      res.send("Erro ao atualizar estabelecimento: " + erro);
+      res.send("Erro ao buscar os dados: " + erro);
     });
 });
+//////////////////////////////////////////////// UPDATE ////////////////////////////////////////////////
+
+router.patch("/:id", upload.single("foto"), async (req, res) => {
+  try {
+    const {
+      nome,
+      cnpj,
+      telefone,
+      email,
+      tipoEstabelecimento,
+      tipoMusica,
+      estiloMusical,
+      comodidades,
+      cep,
+      rua,
+      numero,
+      complemento,
+      bairro,
+      cidade,
+      estado,
+      descricao,
+      proprietario_id,
+    } = req.body;
+
+    const parsedComodidades =
+      typeof comodidades === "string" ? JSON.parse(comodidades) : comodidades;
+
+    const updateData = {
+      nome,
+      cnpj,
+      telefone,
+      email,
+      tipoEstabelecimento,
+      tipoMusica,
+      estiloMusical,
+      comodidades: parsedComodidades,
+      cep,
+      rua,
+      numero,
+      complemento,
+      bairro,
+      cidade,
+      estado,
+      descricao,
+      proprietario_id,
+    };
+
+    if (req.file) {
+      updateData.foto = req.file.filename;
+    }
+
+    await Estabelecimento.update(updateData, { where: { id: req.params.id } });
+
+    const atualizado = await Estabelecimento.findByPk(req.params.id);
+
+    return res.status(200).json({
+      message: "Estabelecimento atualizado com sucesso!",
+      estabelecimento: atualizado,
+    });
+  } catch (erro) {
+    console.error("Erro ao atualizar estabelecimento:", erro);
+    return res.status(500).json({ error: erro.message });
+  }
+});
+
 
 //////////////////////////////////////////////// DELETE ////////////////////////////////////////////////
 

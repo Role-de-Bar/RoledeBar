@@ -1,29 +1,21 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
-import './CardEstabelecimentos.css';
-import { useNavigate } from 'react-router-dom';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import DeleteIcon from '@mui/icons-material/Delete';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import React, { useState, useCallback, useMemo, useEffect } from "react"; // ✅ Adicionei useEffect
+import "./CardEstabelecimentos.css";
+import { useNavigate } from "react-router-dom";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
-function CardEstabelecimentos({ 
-  estabelecimentos, 
-  usuario, 
-  isFavoritosPage = false, 
-  onAtualizarFavoritos 
+function CardEstabelecimentos({
+  estabelecimentos,
+  usuario,
+  isFavoritosPage = false,
+  onAtualizarFavoritos,
 }) {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   
-  // useEffect para verificar se o usuário está logado
-  useEffect(() => {
-    const verificarLogin = async () => {
-      const logado = usuario && Object.keys(usuario).length > 0;
-      setIsLoggedIn(logado);
-    };
-    
-    verificarLogin();
-  }, [usuario]);
+  // Verifica se usuário está realmente logado
+  const isLoggedIn = usuario && Object.keys(usuario).length > 0;
   
   const [favoritosLocais, setFavoritosLocais] = useState(() => {
     if (!usuario) return new Set();
@@ -33,32 +25,27 @@ function CardEstabelecimentos({
 
   const [feedbackMessage, setFeedbackMessage] = useState(null);
 
-  // Mostra feedback temporário
   const showFeedback = useCallback((message, duration = 2500) => {
     setFeedbackMessage(message);
     setTimeout(() => setFeedbackMessage(null), duration);
   }, []);
 
-  const getFavoritos = useCallback(() => {
-    if (!usuario) return {};
-    return JSON.parse(localStorage.getItem("favoritos")) || {};
-  }, [usuario]);
-
-  const isFavorito = useCallback((idEstabelecimento) => {
-    return favoritosLocais.has(String(idEstabelecimento));
-  }, [favoritosLocais]);
+  const isFavorito = useCallback(
+    (idEstabelecimento) => favoritosLocais.has(String(idEstabelecimento)),
+    [favoritosLocais]
+  );
 
   const handleVerMais = useCallback((index) => {
-    if (!isLoggedIn) {
-      navigate('/login');
+    if (!usuario) {
+      showFeedback("⚠️ Para visualizar informações completas, faça login ou cadastre-se!");
       return;
     }
     navigate(`/infosEstabelecimento/${index}`);
-  }, [isLoggedIn, navigate]);
+  }, [usuario, navigate, showFeedback]);
 
   const handleToggleFavorito = useCallback((idEstabelecimento, nomeEstabelecimento) => {
-    if (!isLoggedIn) {
-      navigate('/login');
+    if (!usuario) {
+      showFeedback("⚠️ Para favoritar estabelecimentos, faça login ou cadastre-se!");
       return;
     }
 
@@ -101,47 +88,50 @@ function CardEstabelecimentos({
     }
 
     localStorage.setItem("favoritos", JSON.stringify(favoritos));
-  }, [isLoggedIn, usuario, getFavoritos, isFavoritosPage, onAtualizarFavoritos, navigate]);
+  }, [usuario, getFavoritos, isFavoritosPage, onAtualizarFavoritos, showFeedback]);
 
   const formatarEndereco = useCallback((estab) => {
-    const rua = estab.endereco?.rua || estab.rua || '';
-    const numero = estab.endereco?.numero || estab.numero || '';
-    const bairro = estab.endereco?.bairro || estab.bairro || '';
-    
+    const rua = estab.rua || "";
+    const numero = estab.numero || "";
+    const bairro = estab.bairro || "";
+
     const partes = [
       rua && numero ? `${rua}, ${numero}` : rua || numero,
-      bairro
+      bairro,
     ].filter(Boolean);
 
-    return partes.join(' • ') || 'Endereço não informado';
+    return partes.join(" • ") || "Endereço não informado";
   }, []);
 
-  const mensagemVazia = useMemo(() => (
-    <p className="mensagem-vazia">
-      {isFavoritosPage 
-        ? "Você ainda não favoritou nenhum estabelecimento." 
-        : "Nenhum estabelecimento cadastrado no momento."}
-    </p>
-  ), [isFavoritosPage]);
+  const mensagemVazia = useMemo(
+    () => (
+      <p className="mensagem-vazia">
+        {isFavoritosPage
+          ? "Você ainda não favoritou nenhum estabelecimento."
+          : "Nenhum estabelecimento cadastrado no momento."}
+      </p>
+    ),
+    [isFavoritosPage]
+  );
 
   if (estabelecimentos.length === 0) {
-    return <section className={`lista-estabelecimentos ${isLoggedIn ? 'logado' : ''}`}>{mensagemVazia}</section>;
+    return (
+      <section className={`lista-estabelecimentos ${isLoggedIn ? "logado" : ""}`}>
+        {mensagemVazia}
+      </section>
+    );
   }
 
   return (
     <>
-      {feedbackMessage && (
-        <div className="feedback-toast">
-          {feedbackMessage}
-        </div>
-      )}
+      {feedbackMessage && <div className="feedback-toast">{feedbackMessage}</div>}
 
-      <section className={`lista-estabelecimentos ${isLoggedIn ? 'logado' : ''}`}>
+      <section className={`lista-estabelecimentos ${isLoggedIn ? "logado" : ""}`}>
         {estabelecimentos.map((estab, index) => {
           const idEstabelecimento = estab.id || index;
           const ehFavorito = isFavorito(idEstabelecimento);
-          const imagemUrl = `http://localhost:8081/uploads/${estab.foto}` || '/img/default-bar.jpg';
-          const estiloMusical = estab.estiloMusical || estab.tipoMusica || 'Estilo variado';
+          const imagemUrl = `http://localhost:8081/uploads/${estab.foto}` || "/img/default-bar.jpg";
+          const estiloMusical = estab.estiloMusical || estab.tipoMusica || "Estilo variado";
 
           return (
             <article
@@ -151,7 +141,7 @@ function CardEstabelecimentos({
               aria-label={`${estab.nome} - ${formatarEndereco(estab)}`}
             >
               <button
-                className={`favorite-btn ${ehFavorito ? 'is-favorite' : ''}`}
+                className={`favorite-btn ${ehFavorito ? "is-favorite" : ""}`}
                 title={ehFavorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -161,7 +151,7 @@ function CardEstabelecimentos({
                 aria-label={ehFavorito ? "Desfavoritar" : "Favoritar"}
               >
                 {ehFavorito ? (
-                  <FavoriteIcon fontSize="small" sx={{ color: '#ff4757' }} />
+                  <FavoriteIcon fontSize="small" sx={{ color: "#ff4757" }} />
                 ) : (
                   <FavoriteBorderIcon fontSize="small" />
                 )}
@@ -180,8 +170,8 @@ function CardEstabelecimentos({
                 </div>
 
                 <div className="card-actions">
-                  <button 
-                    className="btn-pill" 
+                  <button
+                    className="btn-pill"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleVerMais(idEstabelecimento);
@@ -191,10 +181,10 @@ function CardEstabelecimentos({
                     <VisibilityIcon fontSize="small" />
                     Ver Mais
                   </button>
-                  
+
                   {!isFavoritosPage && (
-                    <button 
-                      className={`btn-pill ghost ${ehFavorito ? 'is-favorite' : ''}`}
+                    <button
+                      className={`btn-pill ghost ${ehFavorito ? "is-favorite" : ""}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleToggleFavorito(idEstabelecimento, estab.nome);
@@ -214,9 +204,9 @@ function CardEstabelecimentos({
                       )}
                     </button>
                   )}
-                  
+
                   {isFavoritosPage && (
-                    <button 
+                    <button
                       className="btn-pill ghost"
                       onClick={(e) => {
                         e.stopPropagation();

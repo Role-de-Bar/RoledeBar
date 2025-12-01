@@ -1,4 +1,13 @@
-import { Menu, User, Heart, SquarePlus, LogOut, Search, Grip,LayoutGrid  } from "lucide-react";
+import {
+  Menu,
+  User,
+  Heart,
+  SquarePlus,
+  LogOut,
+  Search,
+  Grip,
+  LayoutGrid,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./headerEstabelecimento.css";
@@ -12,17 +21,19 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
 
   // Função helper para atualizar estados do usuário
   const atualizarUsuario = () => {
-    const userData = localStorage.getItem('usuarioLogado');
+    const userData = localStorage.getItem("usuarioLogado");
     if (userData) {
       try {
         const parsed = JSON.parse(userData);
         setUsuarioLogado(parsed);
         const tipo = parsed.tipoUsuario;
-        const tipoCapitalizado = tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : 'Consumidor';
+        const tipoCapitalizado = tipo
+          ? tipo.charAt(0).toUpperCase() + tipo.slice(1)
+          : "Consumidor";
         setTipoUsuario(tipoCapitalizado);
-        console.log('Usuário atualizado:', parsed, 'Tipo:', tipoCapitalizado);
+        console.log("Usuário atualizado:", parsed, "Tipo:", tipoCapitalizado);
       } catch (e) {
-        console.error('Erro ao parsear usuário do localStorage:', e);
+        console.error("Erro ao parsear usuário do localStorage:", e);
         setUsuarioLogado(null);
         setTipoUsuario(null);
       }
@@ -39,61 +50,67 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
 
   // Função para verificar se token expirou
   const verificarTokenExpirado = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) return false;
 
     try {
       // Decoda o token (sem validar a assinatura, só para ler o payload)
-      const partes = token.split('.');
+      const partes = token.split(".");
       if (partes.length !== 3) return false;
 
       const payload = JSON.parse(atob(partes[1]));
       const agora = Math.floor(Date.now() / 1000);
-      
+
       // Se exp existe e é menor que agora, token expirou
       if (payload.exp && payload.exp < agora) {
-        console.log('Token expirou. Deslogando...');
+        console.log("Token expirou. Deslogando...");
         return true;
       }
       return false;
     } catch (e) {
-      console.error('Erro ao verificar token:', e);
+      console.error("Erro ao verificar token:", e);
       return false;
     }
   };
 
   // Função para fazer logout forçado
   const fazerLogoutForçado = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuarioLogado');
-    localStorage.setItem('isLogged', 'false');
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuarioLogado");
+    localStorage.setItem("isLogged", "false");
     setUsuarioLogado(null);
     setTipoUsuario(null);
     setMenuMobileOpen(false);
-    console.log('Usuário deslogado automaticamente (token expirou)');
+    console.log("Usuário deslogado automaticamente (token expirou)");
   };
 
   // useEffect para monitorar mudanças no localStorage
   useEffect(() => {
     const handleStorageChange = (event) => {
       // Se a chave 'usuarioLogado' foi alterada, atualizar
-      if (event.key === 'usuarioLogado' || event.key === null) {
+      if (event.key === "usuarioLogado" || event.key === null) {
         atualizarUsuario();
       }
     };
 
     // Event listener para mudanças em outras abas/janelas
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
 
     // Event listener customizado para mudanças na mesma aba
     const handleCustomStorageChange = () => {
       atualizarUsuario();
     };
-    window.addEventListener('usuarioLogadoAtualizado', handleCustomStorageChange);
+    window.addEventListener(
+      "usuarioLogadoAtualizado",
+      handleCustomStorageChange
+    );
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('usuarioLogadoAtualizado', handleCustomStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener(
+        "usuarioLogadoAtualizado",
+        handleCustomStorageChange
+      );
     };
   }, []);
 
@@ -114,19 +131,19 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
 
     return () => clearInterval(intervalo);
   }, []);
-  
 
-  const goToFavoritos = () => navigate('/favoritos');
-  
+  const goToFavoritos = () => navigate("/favoritos");
+
   const submitLogin = () => {
     goToLoginOrPerfil();
   };
 
   const returnHome = () => {
-    // Limpa dados do login
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuarioLogado');
-    localStorage.setItem('isLogged', 'false');
+    localStorage.clear();
+    sessionStorage.clear();
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuarioLogado");
+    localStorage.setItem("isLogged", "false");
     setUsuarioLogado(null);
     setTipoUsuario(null);
     setIsModalOpen(false);
@@ -134,7 +151,7 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
   };
 
   const goEstabelecimentos = () => {
-   navigate("/cadastroEstabelecimento");
+    navigate("/cadastroEstabelecimento");
   };
 
   const goToLoginOrPerfil = () => {
@@ -160,39 +177,38 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
           <button className="icon-btn">
             <Search size={20} />
           </button>
-        </div>                                                                                                                
+        </div>
 
         {/* Desktop icons */}
         <div className="right desktop-icons">
           <button className="icon-btn" onClick={submitLogin}>
             <User size={24} />
-            {usuarioLogado && <span className="user-name">{usuarioLogado.nome}</span>}
+            {usuarioLogado && (
+              <span className="user-name">{usuarioLogado.nome}</span>
+            )}
           </button>
-    
-          {usuarioLogado &&(
+
+          {usuarioLogado && (
             <button className="icon-btn" onClick={goToFavoritos}>
               <Heart size={24} />
             </button>
           )}
-          
-          {usuarioLogado && tipoUsuario === 'Proprietario' && (
+
+          {usuarioLogado && tipoUsuario === "Proprietario" && (
             <button className="icon-btn" onClick={() => goEstabelecimentos()}>
               <SquarePlus size={24} />
             </button>
           )}
 
-          
-          {usuarioLogado ?  (
+          {usuarioLogado ? (
             <button className="icon-btn" onClick={returnHome}>
               <LogOut size={24} />
-            </button>                                                               
+            </button>
           ) : (
-            <button className="icon-btn" onClick={() => navigate('/') }>
+            <button className="icon-btn" onClick={() => navigate("/")}>
               <LogOut size={24} />
             </button>
           )}
-          
-
         </div>
 
         {/* Mobile menu */}
@@ -211,22 +227,22 @@ function HeaderEstabelecimento({ onToggleFiltros }) {
         <div className="mobile-menu-dropdown">
           <button className="icon-btn" onClick={submitLogin}>
             <User size={24} />
-            <span>{usuarioLogado ? usuarioLogado.nome : 'Login'}</span>
+            <span>{usuarioLogado ? usuarioLogado.nome : "Login"}</span>
           </button>
-          
-          {usuarioLogado && tipoUsuario === 'Consumidor' && (
+
+          {usuarioLogado && tipoUsuario === "Consumidor" && (
             <button className="icon-btn" onClick={goToFavoritos}>
               <Heart size={24} />
               <span>Favoritos</span>
             </button>
           )}
-          
+
           <button className="icon-btn" onClick={returnHome}>
             <LogOut size={24} />
-            <span>{usuarioLogado ? 'Sair' : 'Voltar'}</span>
+            <span>{usuarioLogado ? "Sair" : "Voltar"}</span>
           </button>
-          
-          {usuarioLogado && tipoUsuario === 'Proprietario' && (
+
+          {usuarioLogado && tipoUsuario === "Proprietario" && (
             <button className="icon-btn" onClick={() => goEstabelecimentos()}>
               <SquarePlus size={24} />
               <span>Meus Estabelecimentos</span>
