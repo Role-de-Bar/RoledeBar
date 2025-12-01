@@ -2,41 +2,33 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Heart, ArrowLeft, Search } from "lucide-react";
-import './Favoritos.css';
+import "./Favoritos.css";
 
-// Componente Card para exibir cada estabelecimento
-function CardEstabelecimento({ estabelecimento, onRemover }) {
-  // Função para formatar o endereço
+function CardEstabelecimento({ favorito, onRemover }) {
+  const { estabelecimento } = favorito;
+
   const formatarEndereco = (endereco) => {
-    if (typeof endereco === 'string') {
-      return endereco;
-    }
-    
-    if (typeof endereco === 'object' && endereco !== null) {
+    if (typeof endereco === "string") return endereco;
+
+    if (typeof endereco === "object" && endereco !== null) {
       const { rua, numero, bairro, cidade, estado } = endereco;
-      const partes = [];
-      
-      if (rua) partes.push(rua);
-      if (numero) partes.push(numero);
-      
-      const linha1 = partes.join(', ');
-      const linha2 = [bairro, cidade, estado].filter(Boolean).join(', ');
-      
-      return [linha1, linha2].filter(Boolean).join(' - ');
+      const linha1 = [rua, numero].filter(Boolean).join(", ");
+      const linha2 = [bairro, cidade, estado].filter(Boolean).join(", ");
+      return [linha1, linha2].filter(Boolean).join(" - ");
     }
-    
-    return 'Endereço não disponível';
+
+    return "Endereço não disponível";
   };
 
   return (
     <div className="card-estabelecimento">
       <div className="card-image">
-        <img 
-          src={estabelecimento.imagem || estabelecimento.foto || "https://via.placeholder.com/300x200"} 
-          alt={estabelecimento.nome} 
+        <img
+          src={`http://localhost:8081/uploads/${estabelecimento.foto}`}
+          alt={estabelecimento.nome}
         />
-        <button 
-          className="btn-favorite" 
+        <button
+          className="btn-favorite"
           onClick={(e) => {
             e.stopPropagation();
             onRemover();
@@ -48,7 +40,9 @@ function CardEstabelecimento({ estabelecimento, onRemover }) {
       </div>
       <div className="card-contentf">
         <h3>{estabelecimento.nome}</h3>
-        <p className="card-address">{formatarEndereco(estabelecimento.endereco)}</p>
+        <p className="card-address">
+          {formatarEndereco(estabelecimento.endereco)}
+        </p>
       </div>
     </div>
   );
@@ -57,74 +51,81 @@ function CardEstabelecimento({ estabelecimento, onRemover }) {
 function Favoritos({ setIsLogged, usuarioLogado }) {
   const usuario = usuarioLogado;
   const navigate = useNavigate();
-  const [estabelecimentosFavoritos, setEstabelecimentosFavoritos] = useState([]);
+
+  // Agora salva: { favorito_id, estabelecimento }
+  const [favoritos, setFavoritos] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  function carregarFavoritos() {
-    const favoritos = JSON.parse(localStorage.getItem("favoritos")) || {};
-    const favoritosDoUsuario = favoritos[usuario?.id] || [];
-    const estabelecimentos = JSON.parse(localStorage.getItem("estabelecimentos")) || [];
+  const carregarFavoritos = async () => {
+    try {
+      const res = await fetch(`http://localhost:8081/favoritos/${usuario.id}`, {
+        cache: "no-store",
+      });
 
-    const filtrados = favoritosDoUsuario
-      .map(id => estabelecimentos.find(est => est.id === id))
-      .filter(Boolean);
-    
-    setEstabelecimentosFavoritos(filtrados);
-  }
+      const dados = await res.json();
+
+      // Agora salva tudo: favorito + estabelecimento
+      const lista = dados.map((fav) => ({
+        favorito_id: fav.id,
+        estabelecimento: fav.estabelecimento,
+      }));
+
+      setFavoritos(lista);
+    } catch (error) {
+      console.error("Erro ao carregar favoritos:", error);
+    }
+  };
 
   useEffect(() => {
     if (!usuario) {
       setIsLogged(false);
       localStorage.setItem("isLogged", "false");
-      navigate('/');
+      navigate("/");
     } else {
       setIsLogged(true);
       localStorage.setItem("isLogged", "true");
       carregarFavoritos();
     }
-  }, [usuario, navigate, setIsLogged]);
+  }, [usuario]);
 
   const voltar = () => {
     navigate("/estabelecimentos");
   };
 
-  const removerFavorito = (estabelecimentoParaRemover) => {
-    const favoritos = JSON.parse(localStorage.getItem("favoritos")) || {};
-    const favoritosDoUsuario = favoritos[usuario?.id] || [];
-    const estabelecimentos = JSON.parse(localStorage.getItem("estabelecimentos")) || [];
+  const removerFavorito = async (fav) => {
+    try {
+      await fetch("http://localhost:8081/favoritos/remove", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          favorito_id: fav.favorito_id,                   // CORRETO!
+          consumidor_id: usuario.id,
+          estabelecimento_id: fav.estabelecimento.id,
+        }),
+      });
 
-    // Encontrar o índice original do estabelecimento
-    const indiceOriginal = estabelecimentos.findIndex(
-      est => JSON.stringify(est) === JSON.stringify(estabelecimentoParaRemover)
-    );
-
-    if (indiceOriginal !== -1) {
-      // Remover o índice da lista de favoritos
-      const novosFavoritos = favoritosDoUsuario.filter(idx => idx !== indiceOriginal);
-      favoritos[usuario.id] = novosFavoritos;
-      localStorage.setItem("favoritos", JSON.stringify(favoritos));
+      carregarFavoritos();
+    } catch (error) {
+      console.error("Erro ao remover favorito:", error);
     }
-
-    // Recarregar favoritos
-    carregarFavoritos();
   };
 
-  // Filtrar favoritos baseado na busca
-  const favoritosFiltrados = estabelecimentosFavoritos.filter(est => {
-    if (!est) return false;
-    
+  const favoritosFiltrados = favoritos.filter((fav) => {
+    const est = fav.estabelecimento;
     const searchLower = searchTerm.toLowerCase();
+
     const nomeMatch = est.nome?.toLowerCase().includes(searchLower);
-    
-    // Busca no endereço (objeto ou string)
+
     let enderecoMatch = false;
-    if (typeof est.endereco === 'string') {
+
+    if (typeof est.endereco === "string") {
       enderecoMatch = est.endereco.toLowerCase().includes(searchLower);
-    } else if (typeof est.endereco === 'object' && est.endereco !== null) {
-      const enderecoStr = JSON.stringify(est.endereco).toLowerCase();
-      enderecoMatch = enderecoStr.includes(searchLower);
+    } else if (typeof est.endereco === "object" && est.endereco !== null) {
+      enderecoMatch = JSON.stringify(est.endereco)
+        .toLowerCase()
+        .includes(searchLower);
     }
-    
+
     return nomeMatch || enderecoMatch;
   });
 
@@ -139,18 +140,15 @@ function Favoritos({ setIsLogged, usuarioLogado }) {
             </button>
             <div className="header-title">
               <h1>
-                <Heart size={28} fill="currentColor" />
-                Favoritos
+                <Heart size={28} fill="currentColor" /> Favoritos
               </h1>
-              {estabelecimentosFavoritos.length > 0 && (
-                <span className="favoritos-count">
-                  {estabelecimentosFavoritos.length}
-                </span>
+              {favoritos.length > 0 && (
+                <span className="favoritos-count">{favoritos.length}</span>
               )}
             </div>
           </div>
-          
-          {estabelecimentosFavoritos.length > 0 && (
+
+          {favoritos.length > 0 && (
             <div className="search-container">
               <Search className="search-icon" size={20} />
               <input
@@ -179,18 +177,21 @@ function Favoritos({ setIsLogged, usuarioLogado }) {
                   : "Comece a adicionar seus bares favoritos!"}
               </p>
               {!searchTerm && (
-                <button className="btn-explorar" onClick={() => navigate("/estabelecimentos")}>
+                <button
+                  className="btn-explorar"
+                  onClick={() => navigate("/estabelecimentos")}
+                >
                   Explorar Bares
                 </button>
               )}
             </div>
           ) : (
             <div className="grid-favoritos">
-              {favoritosFiltrados.map((est, index) => (
-                <CardEstabelecimento 
-                  key={est.id || index} 
-                  estabelecimento={est}
-                  onRemover={() => removerFavorito(est)}
+              {favoritosFiltrados.map((fav) => (
+                <CardEstabelecimento
+                  key={fav.favorito_id}
+                  favorito={fav}
+                  onRemover={() => removerFavorito(fav)}
                 />
               ))}
             </div>

@@ -13,12 +13,11 @@ function CardEstabelecimentos({
   onAtualizarFavoritos,
 }) {
   const navigate = useNavigate();
-  
+
   // Verifica se usuário está realmente logado
   const isLoggedIn = usuario && Object.keys(usuario).length > 0;
-  
-  const [favoritosLocais, setFavoritosLocais] = useState(new Set());
 
+  const [favoritosLocais, setFavoritosLocais] = useState(new Set());  
 
   const [feedbackMessage, setFeedbackMessage] = useState(null);
 
@@ -32,83 +31,89 @@ function CardEstabelecimentos({
     [favoritosLocais]
   );
 
-  const handleVerMais = useCallback((index) => {
-    if (!usuario) {
-      showFeedback("⚠️ Para visualizar informações completas, faça login ou cadastre-se!");
-      return;
-    }
-    navigate(`/infosEstabelecimento/${index}`);
-  }, [usuario, navigate, showFeedback]);
-
- const handleToggleFavorito = useCallback(
-  async (idEstabelecimento, nomeEstabelecimento) => {
-    if (!usuario) {
-      showFeedback("⚠️ Para favoritar estabelecimentos, faça login ou cadastre-se!");
-      return;
-    }
-
-    const idUsuario = usuario.id;
-    const tipo = usuario.tipo; // "consumidor" ou "proprietario"
-    const campoUsuario =
-      tipo === "consumidor" ? "consumidor_id" : "proprietario_id";
-
-    const idStr = String(idEstabelecimento);
-    const jaFavoritado = favoritosLocais.has(idStr);
-
-    try {
-      if (jaFavoritado) {
-        // 🔥 REMOVE DO BACKEND
-        await fetch("http://localhost:8081/favoritos/remove", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            estabelecimento_id: idEstabelecimento,
-            consumidor_id: tipo === "consumidor" ? idUsuario : null,
-            proprietario_id: tipo === "proprietario" ? idUsuario : null,
-          }),
-        });
-
-        // Atualiza front
-        setFavoritosLocais(prev => {
-          const novo = new Set(prev);
-          novo.delete(idStr);
-          return novo;
-        });
-
-        const msg = isFavoritosPage
-          ? `💔 ${nomeEstabelecimento} removido dos favoritos`
-          : `💔 ${nomeEstabelecimento} desfavoritado`;
-
-        showFeedback(msg);
-
-        if (isFavoritosPage && onAtualizarFavoritos) {
-          onAtualizarFavoritos();
-        }
-      } else {
-        // 💖 ADICIONA FAVORITO VIA BACKEND
-        await fetch("http://localhost:8081/favoritos/add", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            estabelecimento_id: idEstabelecimento,
-            consumidor_id: tipo === "consumidor" ? idUsuario : null,
-            proprietario_id: tipo === "proprietario" ? idUsuario : null,
-          }),
-        });
-
-        // Atualiza front
-        setFavoritosLocais(prev => new Set(prev).add(idStr));
-
-        showFeedback(`💖 ${nomeEstabelecimento} adicionado aos favoritos!`);
+  const handleVerMais = useCallback(
+    (index) => {
+      if (!usuario) {
+        showFeedback(
+          "⚠️ Para visualizar informações completas, faça login ou cadastre-se!"
+        );
+        return;
       }
-    } catch (error) {
-      console.error("Erro ao atualizar favorito:", error);
-      showFeedback("❌ Erro ao atualizar favorito.");
-    }
-  },
-  [usuario, favoritosLocais, isFavoritosPage, onAtualizarFavoritos, showFeedback]
-);
+      navigate(`/infosEstabelecimento/${index}`);
+    },
+    [usuario, navigate, showFeedback]
+  );
 
+  const handleToggleFavorito = useCallback(
+    async (idEstabelecimento, nomeEstabelecimento) => {
+      if (!usuario) {
+        showFeedback(
+          "⚠️ Para favoritar estabelecimentos, faça login ou cadastre-se!"
+        );
+        return;
+      }
+
+      const idUsuario = usuario?.id;
+      const tipo = usuario.tipoUsuario; // "consumidor" ou "proprietario"
+
+      const idStr = String(idEstabelecimento);
+      const jaFavoritado = favoritosLocais.has(idStr);
+      const payload = {
+        estabelecimento_id: idEstabelecimento,
+        consumidor_id: tipo === "consumidor" ? idUsuario : null,
+        proprietario_id: tipo === "proprietario" ? idUsuario : null,
+      };
+
+      try {
+        if (jaFavoritado) {
+          // REMOVER FAVORITO
+          await fetch("http://localhost:8081/favoritos/remove", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          // Atualiza front-end
+          setFavoritosLocais((prev) => {
+            const novo = new Set(prev);
+            novo.delete(idStr);
+            return novo;
+          });
+
+          const msg = isFavoritosPage
+            ? `💔 ${nomeEstabelecimento} removido dos favoritos`
+            : `💔 ${nomeEstabelecimento} desfavoritado`;
+
+          showFeedback(msg);
+
+          if (isFavoritosPage && onAtualizarFavoritos) {
+            onAtualizarFavoritos();
+          }
+        } else {
+          // ADICIONAR FAVORITO
+          await fetch("http://localhost:8081/favoritos/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          setFavoritosLocais((prev) => new Set(prev).add(idStr));
+
+          showFeedback(`💖 ${nomeEstabelecimento} adicionado aos favoritos!`);
+        }
+      } catch (error) {
+        console.error("Erro ao atualizar favorito:", error);
+        showFeedback("❌ Erro ao atualizar favorito.");
+      }
+    },
+    [
+      usuario,
+      favoritosLocais,
+      isFavoritosPage,
+      onAtualizarFavoritos,
+      showFeedback,
+    ]
+  );
 
   const formatarEndereco = useCallback((estab) => {
     const rua = estab.rua || "";
@@ -136,7 +141,9 @@ function CardEstabelecimentos({
 
   if (estabelecimentos.length === 0) {
     return (
-      <section className={`lista-estabelecimentos ${isLoggedIn ? "logado" : ""}`}>
+      <section
+        className={`lista-estabelecimentos ${isLoggedIn ? "logado" : ""}`}
+      >
         {mensagemVazia}
       </section>
     );
@@ -144,14 +151,21 @@ function CardEstabelecimentos({
 
   return (
     <>
-      {feedbackMessage && <div className="feedback-toast">{feedbackMessage}</div>}
+      {feedbackMessage && (
+        <div className="feedback-toast">{feedbackMessage}</div>
+      )}
 
-      <section className={`lista-estabelecimentos ${isLoggedIn ? "logado" : ""}`}>
+      <section
+        className={`lista-estabelecimentos ${isLoggedIn ? "logado" : ""}`}
+      >
         {estabelecimentos.map((estab, index) => {
           const idEstabelecimento = estab.id || index;
           const ehFavorito = isFavorito(idEstabelecimento);
-          const imagemUrl = `http://localhost:8081/uploads/${estab.foto}` || "/img/default-bar.jpg";
-          const estiloMusical = estab.estiloMusical || estab.tipoMusica || "Estilo variado";
+          const imagemUrl =
+            `http://localhost:8081/uploads/${estab.foto}` ||
+            "/img/default-bar.jpg";
+          const estiloMusical =
+            estab.estiloMusical || estab.tipoMusica || "Estilo variado";
 
           return (
             <article
@@ -162,7 +176,11 @@ function CardEstabelecimentos({
             >
               <button
                 className={`favorite-btn ${ehFavorito ? "is-favorite" : ""}`}
-                title={ehFavorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                title={
+                  ehFavorito
+                    ? "Remover dos favoritos"
+                    : "Adicionar aos favoritos"
+                }
                 onClick={(e) => {
                   e.stopPropagation();
                   handleToggleFavorito(idEstabelecimento, estab.nome);
@@ -204,7 +222,9 @@ function CardEstabelecimentos({
 
                   {!isFavoritosPage && (
                     <button
-                      className={`btn-pill ghost ${ehFavorito ? "is-favorite" : ""}`}
+                      className={`btn-pill ghost ${
+                        ehFavorito ? "is-favorite" : ""
+                      }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleToggleFavorito(idEstabelecimento, estab.nome);

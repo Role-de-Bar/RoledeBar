@@ -50,7 +50,6 @@ function CadastroEstabelecimento({ setIsLogged, usuarioLogado }) {
   const [foto, setFoto] = useState("");
 
   useEffect(() => {
-    console.log(usuario);
     if (!usuario) {
       setIsLogged(false);
       localStorage.setItem("isLogged", "false");

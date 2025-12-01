@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Favorito = require("../models/entities/Favorito");
+const Estabelecimento = require("../models/entities/Estabelecimento");
+const { Op } = require("sequelize");
 
 //////////////////////////////////////////////// CREATE ////////////////////////////////////////////////
 
@@ -35,22 +37,31 @@ router.post("/add", async (req, res) => {
 
 //////////////////////////////////////////////// READ ////////////////////////////////////////////////
 
-router.get("/user/:tipo/:id", async (req, res) => {
+router.get("/:idUsuario", async (req, res) => {
   try {
-    const { tipo, id } = req.params;
-    let where = {};
-    if (tipo === "consumidor") where.consumidor_id = id;
-    else if (tipo === "proprietario") where.proprietario_id = id;
-    else return res.status(400).json({ message: "Tipo inválido" });
+    const { idUsuario } = req.params;
 
-    const favoritos = await Favorito.findAll({ where });
-    res.json(favoritos);
-  } catch (erro) {
-    res
-      .status(500)
-      .json({ message: "Erro ao listar favoritos", error: erro.message });
+    const favoritos = await Favorito.findAll({
+      where: {
+        [Op.or]: [
+          { consumidor_id: idUsuario },
+          { proprietario_id: idUsuario }
+        ]
+      },
+      include: [
+        {
+          model: Estabelecimento,
+          as: "estabelecimento",
+        },
+      ],
+    });
+
+    res.status(200).json(favoritos);
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao carregar favoritos", details: err });
   }
 });
+
 
 //////////////////////////////////////////////// DELETE ////////////////////////////////////////////////
 
