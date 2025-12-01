@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import './CardEstabelecimentos.css';
 import { useNavigate } from 'react-router-dom';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -13,9 +13,17 @@ function CardEstabelecimentos({
   onAtualizarFavoritos 
 }) {
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   
-  // Verifica se usuário está realmente logado
-  const isLoggedIn = usuario && Object.keys(usuario).length > 0;
+  // useEffect para verificar se o usuário está logado
+  useEffect(() => {
+    const verificarLogin = async () => {
+      const logado = usuario && Object.keys(usuario).length > 0;
+      setIsLoggedIn(logado);
+    };
+    
+    verificarLogin();
+  }, [usuario]);
   
   const [favoritosLocais, setFavoritosLocais] = useState(() => {
     if (!usuario) return new Set();
@@ -41,16 +49,16 @@ function CardEstabelecimentos({
   }, [favoritosLocais]);
 
   const handleVerMais = useCallback((index) => {
-    if (!usuario) {
-      showFeedback("⚠️ Para visualizar informações completas, faça login ou cadastre-se!");
+    if (!isLoggedIn) {
+      navigate('/login');
       return;
     }
     navigate(`/infosEstabelecimento/${index}`);
-  }, [usuario, navigate, showFeedback]);
+  }, [isLoggedIn, navigate]);
 
   const handleToggleFavorito = useCallback((idEstabelecimento, nomeEstabelecimento) => {
-    if (!usuario) {
-      showFeedback("⚠️ Para favoritar estabelecimentos, faça login ou cadastre-se!");
+    if (!isLoggedIn) {
+      navigate('/login');
       return;
     }
 
@@ -93,7 +101,7 @@ function CardEstabelecimentos({
     }
 
     localStorage.setItem("favoritos", JSON.stringify(favoritos));
-  }, [usuario, getFavoritos, isFavoritosPage, onAtualizarFavoritos, showFeedback]);
+  }, [isLoggedIn, usuario, getFavoritos, isFavoritosPage, onAtualizarFavoritos, navigate]);
 
   const formatarEndereco = useCallback((estab) => {
     const rua = estab.endereco?.rua || estab.rua || '';

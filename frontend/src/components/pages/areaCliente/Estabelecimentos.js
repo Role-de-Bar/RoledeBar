@@ -15,8 +15,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import ComodidadesFilter from "../../form/ComodidadesFiler";
 
 function Estabelecimentos({ setIsLogged, usuarioLogado }) {
-  const isLoggedIn = usuarioLogado && Object.keys(usuarioLogado).length > 0;
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [tipoSelecionado, setTipoSelecionado] = useState("");
   const [tipoMusicaSelecionado, setTipoMusicaSelecionado] = useState("");
   const [estiloSelecionado, setEstiloSelecionado] = useState("");
@@ -27,7 +26,12 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
   const [filtrosAbertos, setFiltrosAbertos] = useState(false);
 
   useEffect(() => {
-    const carregar = async () => {
+    const verificarLoginECarregar = async () => {
+      // Verifica se o usuário está logado
+      const logado = usuarioLogado && Object.keys(usuarioLogado).length > 0;
+      setIsLoggedIn(logado);
+
+      // Carrega os estabelecimentos
       try {
         const resp = await fetch("http://localhost:8081/estabelecimentos/all");
         const dados = await resp.json();
@@ -38,8 +42,8 @@ function Estabelecimentos({ setIsLogged, usuarioLogado }) {
       }
     };
 
-    carregar();
-  }, []);
+    verificarLoginECarregar();
+  }, [usuarioLogado]);
 
   const aplicarFiltros = () => {
     const todos = JSON.parse(localStorage.getItem("estabelecimentos")) || [];
